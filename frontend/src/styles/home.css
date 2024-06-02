@@ -1,0 +1,204 @@
+.home-header{
+    width: 100%;
+    height: 600px;
+    background-image: url(../../public/images/hotel1.jpg);
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-clip: content-box;
+	background-position: center bottom;
+	
+	animation: changeB_img_com 50s linear infinite;
+    
+}
+
+@keyframes changeB_img_com {
+	0% {
+	  background-image: url(../../public/images/hotel1.jpg);
+	}
+	20% {
+	  background-image: url(../../public/images/hotel2.jpg);
+	}
+	40% {
+	  background-image: url(../../public/images/hotel3.jpg);
+	}
+	60% {
+	  background-image: url(../../public/images/hotel1.jpg);
+	}
+	80%{
+    background-image: url(../../public/images/hotel2.jpg);
+	}
+	100%{
+		background-image: url(../../public/images/hotel3.jpg);
+	}
+  }
+
+.home-body{
+    width: 100%;
+    height: 1500px;
+    
+}
+
+.home-footer{
+    width: 100%;
+    
+}
+
+.imageViewer{
+    height: 400px;
+    width: 100%;
+}
+
+.home-header img {
+    margin-left: 9px;
+    margin-top: 7px;
+  }
+
+  .shape {
+    position: absolute;
+    top: 0; 
+    left: 25%;
+    transform: translateX(-50%);
+    width: 125px;
+    height: 100px;
+    background-color: #b9a871;
+    border-radius: 0px 0px 15px 15px;
+    z-index: 1; 
+   
+  }
+
+  .home-header h1 ,h2 ,h3 ,h5 {
+   color: white;
+   font-weight: bold;
+   margin-left: 21%;
+  }
+
+  .home-header h1{
+    margin-top: 200px;
+  }
+
+  .BookNow-btn{
+    width: 200px;
+    height: 50px;
+    border-radius: 15px;
+    background-color: #b9a871;
+    display: inline-block;
+    padding: 10px 20px; 
+    color: #fff; 
+    text-decoration: none;
+    border: none;
+    text-align: center;
+    cursor: pointer;
+    margin-left: 45%;
+    margin-top: 50px;
+    font-weight: bold;
+  }
+
+ .welcomeStatement{
+  font-size: 30px;
+  text-align: center;
+  margin-top: 20px;
+ }
+
+ .home-body-content{
+  margin-top: 5%;
+  margin-left: 10%;
+  
+  display: flex;
+  width: 80%;
+  height: 90%;
+ }
+
+ .home-body-content-left{
+  height: 100%;
+  width: 50%;
+  
+ }
+
+ .home-body-content-right{
+  height: 100%;
+  width: 50%;
+  
+ }
+
+ .home-body-content-left p {
+  font-size: 20px;
+  text-align: justify;
+  user-select: none;
+ }
+
+ .home-body-content-right img{
+  margin-left: 50px;
+  width: 500px;
+  height: 300px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  
+ }
+
+ .About-content{
+  width: 80%;
+  margin-left: 10%;
+  display: flex;
+  margin-top: 50px;
+  height: 300px;
+ }
+
+ .About-content-body{
+  width: 50%;
+  height: 100%;
+ }
+
+ .About-content-image{
+  width: 50%;
+  height: 100%;
+ }
+
+ .About-content-body h1{
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  user-select: none;
+ }
+
+ .About-content-body p{
+  text-align: justify;
+  font-size: 18px;
+  user-select: none;
+  margin-left: 15px;
+  margin-bottom: 5px;
+ }
+
+ .About-content-image img{
+  width: 200px;
+  height: 200px;
+}
+
+.contact-details{
+  width: 80%;
+  margin-left: 10%;
+  display: flex;
+  margin-top: 50px;
+  height: 450px;
+
+}
+
+.contact-details-left{
+  width: 50%;
+  height: 100%;
+  
+}
+
+.contact-details-right{
+  width: 50%;
+  height: 100%;
+  
+}
+
+.contact-details-left p{
+  user-select: none;
+  font-size: 22px;
+  justify-content: center;
+  
+}
+
+ 
