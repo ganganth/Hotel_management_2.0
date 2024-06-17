@@ -9,6 +9,7 @@ const eventCartSlice = createSlice({
     initialState,
     reducers: {
         addEventToCart: (state, action) => {
+            console.log(action.payload)
             const found = state.items.find(item => item.id === action.payload.id);
             if(found) {
                 state.items = state.items.map((e) => {

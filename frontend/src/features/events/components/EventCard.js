@@ -35,8 +35,8 @@ const EventCard = ({event}) => {
 
     return (
         <div className="p-3 rounded">
-            <Card style={{ width: '18rem' }}>
-                <Card.Img variant="top" src={event.image} />
+            <Card style={{ width: '18rem',height:"500px" }}>
+                <Card.Img variant="top" src={event.image} style={{height:"200px"}}/>
                 <Card.Body>
                     <Card.Title className='mb-4'>{event.name}</Card.Title>
                     <div className='d-flex flex-column mb-3'>

@@ -38,6 +38,7 @@ const RoomCard = (props) => {
 };
 
     const roomMoreViewFunc = (id) => {
+        setSingleRoom({})
         props.setMoreRoomView(true);
         getSingleRoomType(id);
     }
@@ -50,6 +51,8 @@ const RoomCard = (props) => {
                     roomId = {props.roomId}
                     singleRoom = {singleRoom}
                     setSingleRoom ={setSingleRoom}
+                    checkOutDate = {props.checkOutDate}
+                    checkInDate = {props.checkInDate}
                 />
             ) : (
                 <div className="row justify-content-center mb-5" >

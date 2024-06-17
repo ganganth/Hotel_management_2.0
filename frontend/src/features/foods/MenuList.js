@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-// import { useNavigate } from 'react-router-dom';
 import { Spinner, Card, Button } from 'react-bootstrap';
-// import CartBadge from './components/CartBadge';
 import Menu from './Menu';
-const MenuList = (props) => {
-    const axiosPrivate = useAxiosPrivate();
-    // const navigate = useNavigate();
+import moment from 'moment';
 
+
+const MenuList = (props) => {
+
+    const axiosPrivate = useAxiosPrivate();
     const [menus, setMenus] = useState([]);
     const [loading, setLoading] = useState(true);
     const [breakfast, setBreakfast] = useState(false);
@@ -17,8 +17,9 @@ const MenuList = (props) => {
     const [menuId, setMenuId] = useState('');
     const [viewMenu, setViewMenu] = useState(false);
     const [createFoodOrder,setCreateFoodOrder] = useState(false)
-
-    useEffect(() => {
+    const [reservedDate, setReserverDate] = useState({})
+    
+     useEffect(() => {
         const getAllMenus = async () => {
             try {
                 const response = await axiosPrivate.get('/api/foods');
@@ -47,15 +48,18 @@ const MenuList = (props) => {
 
     const lunchFunc = (id) => {
         setDayNumber(id);
+        createDate(id);
         setLunch(true);
         setBreakfast(false);
         setDinner(false);
         setMenus([]);
         getSelected(2);
+         
     }
 
     const BreakfastFunc = (id) => {
         setDayNumber(id);
+        createDate(id);
         setLunch(false);
         setBreakfast(true);
         setDinner(false);
@@ -65,6 +69,7 @@ const MenuList = (props) => {
 
     const DinnerFunc = (id) => {
         setDayNumber(id);
+        createDate(id);
         setLunch(false);
         setBreakfast(false);
         setDinner(true);
@@ -77,6 +82,12 @@ const MenuList = (props) => {
         setViewMenu(true);
         setMenuId(id)
     }
+  
+    const createDate = (dayNumber) => {
+        const checkInDate = moment(props.checkInDate); 
+        const formatReservedDate = checkInDate.add((dayNumber-1), 'days');
+        setReserverDate(formatReservedDate.toDate()); 
+    };
 
     return (
         <>
@@ -85,6 +96,7 @@ const MenuList = (props) => {
                     menuId = {menuId}
                     setViewMenu = {setViewMenu}
                     setCreateFoodOrder = {setCreateFoodOrder}
+                    reservedDate = {reservedDate}
                 />
             ) : (
                 <>

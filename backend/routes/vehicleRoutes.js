@@ -9,7 +9,7 @@ const {createNewVehicle, updateVehicleImages, getAllVehicles, deleteVehicle, upd
 
 router.route('/')
     .post(isEmployee, createNewVehicle) // create a new vehicle (employees & admins)
-    .get(isEmployee, getAllVehicles) // get all vehicle data (employees & admins)
+    .get(getAllVehicles) // get all vehicle data (employees & admins)
     .put(isEmployee, updateVehicle) // update vehicle details (employees & admins)
 
 router.route('/images')

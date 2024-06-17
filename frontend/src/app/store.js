@@ -4,6 +4,7 @@ import authReducer from './auth/authSlice';
 import foodCartReducer from './foodCart/foodCartSlice';
 import eventCartReducer from './eventCart/eventSlice';
 import stateReducer from './state/stateSlice'
+import orderCartReducer from './ordersCart/orderCartSlice'
 
 // Function to save Redux state to local storage
 const saveStateToLocalStorage = (state) => {
@@ -35,7 +36,8 @@ const store = configureStore({
         auth: authReducer,
         foodCart: foodCartReducer,
         eventCart: eventCartReducer,
-        state: stateReducer
+        state: stateReducer,
+        orderCart: orderCartReducer
     },
     middleware: getDefaultMiddleware({
         serializableCheck: false, // Disables the warning for serializable state
@@ -43,7 +45,6 @@ const store = configureStore({
 
     devTools: true,
     preloadedState: persistedState
-    // +  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 })
 
 // Subscribe to Redux store updates and save state to local storage

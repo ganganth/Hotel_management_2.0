@@ -1,5 +1,5 @@
 import CustomerHeader from "./Home/CustomerHeader";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Datetime from 'react-datetime';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,7 @@ import MenuList from "../features/foods/MenuList";
 import RoomList from "../features/rooms/RoomList";
 import VehicleRental from "../features/vehicles/VehicleRental";
 import Events from "../features/events/Events";
+// import {toast} from 'react-toastify';
 
 const Booking = () => {
 
@@ -18,8 +19,8 @@ const Booking = () => {
     const [vehicleOrder, setVehicleOrder] = useState(false);
     const [eventOrder, setEventOrder] = useState(false);
     const [roomOrder, setRoomOrder] = useState(false);
-    // const [bill, setBill] = useState(false);
     const dispatch = useDispatch();
+    const { items } = useSelector(state => state.orderCart)
 
     const allOrderFreeze = useSelector(selectAllOrderFreeze);
     const otherOrderFreeze = useSelector(selectOtherOrderFreeze);
@@ -30,7 +31,9 @@ const Booking = () => {
     total_breakfast = total_days;
     total_lunch = board ? total_days : 0;
     total_dinner = total_days- 1;
- 
+
+    
+    
     // useEffect(() => {
     //     const items = JSON.parse(localStorage.getItem('items'));
     //     if (items !== null) {
@@ -89,6 +92,15 @@ const Booking = () => {
         dispatch(removeAllOrderFreeze());
     }
 
+    useEffect(() => {
+        if(items.find(i => i.reservationType  === 'rooms')){
+            const roomsOrder = items.filter(i => i.reservationType === 'rooms');
+            const oneRoomOrder =roomsOrder[0];
+            setCheckInDate(new Date(oneRoomOrder.checkInDate)); 
+            setCheckOutDate(new Date(oneRoomOrder.checkOutDate));
+        }
+    }, [items]);
+
     return (
         <div className="container-fluid">
             <div className="row">
@@ -101,20 +113,29 @@ const Booking = () => {
                     totalLunch={total_lunch}
                     totalDinner={total_dinner}
                     setFoodOrder={setFoodOrder}
+                    checkOutDate = {checkOutDate}
+                    checkInDate = {checkInDate}
                 />
 
             ) : vehicleOrder ? (
                 <VehicleRental
                     setVehicleOrder = {setVehicleOrder}
+                    total_days = {total_days}
+                    checkOutDate = {checkOutDate}
+                    checkInDate = {checkInDate}
                 />
             ) : eventOrder ? (
                 <Events
                     setEventOrder = {setEventOrder}
+                    checkOutDate = {checkOutDate}
+                    checkInDate = {checkInDate}
                 />
             ) :  roomOrder ? (
                 <RoomList
                     setRoomOrder = {setRoomOrder}
                     roomOrder = {roomOrder}
+                    checkOutDate = {checkOutDate}
+                    checkInDate = {checkInDate}
                 />
             ): (
                 <>
@@ -124,7 +145,7 @@ const Booking = () => {
                         </div>
                         <hr></hr>
 
-                        <div className='w-75 mx-auto shadow px-3 py-4 rounded mt-4'>
+                        <div className='w-75 mx-auto shadow px-3 py-4 rounded mt-4' style={(items.find(i => i.reservationType  === 'rooms')) ? { pointerEvents: "none", opacity: "0.5" } : {}}>
                             <p className='text-dark text-start my-0' style={{ fontSize: '14px', fontWeight: 500, marginLeft: '25px' }}>Please select your <strong>Check in Date</strong> and <strong>Check out Date</strong></p>
 
                             <div className='d-flex align-items-center justify-content-center gap-5 mt-3 w-100 mx-auto'>
