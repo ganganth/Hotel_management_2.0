@@ -118,7 +118,7 @@ const CustomerCart = () => {
 
                 </div>
                 <div className='col-3 '>
-                    <div class="card" style={{ width: "90%", marginLeft: "5%", height: "500px" }}>
+                    <div className="card" style={{ width: "90%", marginLeft: "5%", height: "500px" }}>
                         <div className="card-body" >
                             <h5 className="card-title text-reset">Total Cost</h5>
                             <table className="table">
@@ -153,7 +153,7 @@ const CustomerCart = () => {
                                     </tr>
                                 </tbody>
                             </table>
-                            <button type="button" class="btn btn-primary">Pay Now</button>
+                            <button type="button" className="btn btn-primary">Pay Now</button>
                         </div>
                     </div>
                 </div>

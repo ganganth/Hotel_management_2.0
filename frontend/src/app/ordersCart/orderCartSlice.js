@@ -40,7 +40,8 @@ const orderCartSlice = createSlice({
                 const found = state.items.find(i => i.reservationType === 'events' && i.id === item.id);
                 if (found) {
                     found.Total_price += item.Total_price;
-                    found.quantity = 1;
+                    found.people = item.people;
+                    found.description = item.description;
                     itemUpdated = true;
                 }
             }

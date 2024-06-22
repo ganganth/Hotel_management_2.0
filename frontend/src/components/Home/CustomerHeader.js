@@ -24,11 +24,11 @@ const CustomerHeader = () => {
                     <MdArrowDropDown style={{ height: '20px', width: '20px', color: 'black', marginLeft: '20px' }} />
                 </a>
                 {popup ? (
-                    <div class="list-group" style={{ position: "absolute", top: "1", right: "0" }}>
+                    <div className="list-group" style={{ position: "absolute", top: "1", right: "0" }}>
 
-                        <a href="/profile" class="list-group-item list-group-item-action" >Profile</a>
-                        <a href="/myReservation" class="list-group-item list-group-item-action">My Reservation</a>
-                        <a onClick={() => { setPopup(false); dispatch(logoutAuthUser()); }} class="list-group-item list-group-item-action">Logout</a>
+                        <a href="/profile" className="list-group-item list-group-item-action" >Profile</a>
+                        <a href="/myReservation" className="list-group-item list-group-item-action">My Reservation</a>
+                        <a onClick={() => { setPopup(false); dispatch(logoutAuthUser()); }} className="list-group-item list-group-item-action">Logout</a>
 
                     </div>
                 ) : (

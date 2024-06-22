@@ -2,13 +2,13 @@ import { AiFillDelete } from "react-icons/ai";
 
 const CustomerCartCard = (props) => {
     return (
-        <div class="card shadow-none" style={{ width: "90%", marginLeft: "5%" }}>
+        <div className="card shadow-none" style={{ width: "90%", marginLeft: "5%" }}>
             <div className="card-body" >
                 <>
                     <h5 className="card-title text-reset fs-5">{props.title}</h5>
 
                     {props.data.map(d => (
-                        <div class="card" style={{ width: "95%", marginLeft: "2.5%" }} key={d.id}>
+                        <div className="card" style={{ width: "95%", marginLeft: "2.5%" }} key={d.id}>
                             <div className="card-body">
                                 <div className='d-flex'>
                                     <div className='col-2'>

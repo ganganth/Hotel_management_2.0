@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, Button } from 'react-bootstrap';
-// import { addEventToCart } from '../../../app/eventCart/eventSlice';
 import { toast } from 'react-toastify';
 import { addItemToCart } from '../../../app/ordersCart/orderCartSlice';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
@@ -10,7 +9,6 @@ const EventCard = (props) => {
 
     const dispatch = useDispatch();
     const [qty, setQty] = useState(1);
-    const [total_people, setTotal_people] = useState(1);
     const { items } = useSelector(state => state.orderCart)
     const axiosPrivate = useAxiosPrivate();
 
@@ -22,13 +20,11 @@ const EventCard = (props) => {
 
     const increaseQty = () => {
         if (qty >= props.event.maxQuantity) {
-            toast.warning(`Your are added maximum number of ${props.event.name} in the cart`)
+            toast.warning(`Your are added maximum number of peoples for ${props.event.name} in the cart`)
         }
         else {
-            console.log("djchbsdhcb")
-            console.log(qty)
             setQty(prev => prev + 1);
-            console.log(qty)
+           
         }
 
     }
@@ -56,52 +52,31 @@ const EventCard = (props) => {
             toast.error('Failed to fetch available food count');
             return;
         }
-        console.log(availableCount)
-        // const isFound = items.find(i =>
-        //     i.reservationType === 'events'
-        //     && i.id === props.event.id
-        //     && (i.people + qty) > availableCount
-        //     && new Date(i.reservedDate).getTime() === new Date(props.reservedDate).getTime()
-        // );
-        // console.log(isFound)
-        const isFound = items.find(i => {
-            console.log('Checking item:', i);
-            const isReservationTypeMatch = i.reservationType === 'events';
-            console.log('Reservation type match:', isReservationTypeMatch);
         
-            const isIdMatch = i.id === props.event.id;
-            console.log('ID match:', isIdMatch);
-        
-            const isPeopleCountConditionMet = (i.people + qty) > availableCount;
-            console.log('People count condition met:', isPeopleCountConditionMet);
-        
-            const isDateMatch = new Date(i.reservedDate).getTime() === new Date(props.reservedDate).getTime();
-            console.log('Date match:', isDateMatch);
-        
-            return isReservationTypeMatch && isIdMatch && isPeopleCountConditionMet && isDateMatch;
-        });
-        
-        console.log('Found item:', isFound);
-        
+        const isFound = items.find(i =>
+            i.reservationType === 'events'
+            && i.id === props.event.id
+            && (i.people + qty) > availableCount
+            && new Date(i.reservedDate).getTime() === new Date(props.reservedDate).getTime()
+        );
 
         if (isFound) {
             toast.warning(`Maximum number of ${props.event.name} Orders reserved In ${props.reservedDate}`)
         }
         else {
-            setTotal_people(qty);
-
-            const total_people_found = items.filter(i => i.reservationType === 'events' && i.id === props.event.id && new Date(i.reservedDate).getTime() === new Date(props.reservedDate).getTime())
-            console.log("1",total_people)
-            if (total_people_found.length > 0) {
-                const total_people_from_reservations = total_people_found.reduce((sum, current) => sum + current.people, 0);
-                 setTotal_people(total_people_from_reservations + qty);
-                 console.log("2",total_people)
+            
+            const total_people_found = items.find(i => i.reservationType === 'events' && i.id === props.event.id && new Date(i.reservedDate).getTime() === new Date(props.reservedDate).getTime())
+            
+            let totalPeople = qty;
+            
+            if (total_people_found) {
+                totalPeople +=total_people_found.people;
             }
-            console.log("3",total_people)
+           
             const e = {
                 id: props.event.id,
                 image: props.event.image,
-                people: total_people,
+                people: totalPeople,
                 name: props.event.name,
                 type: props.event.type,
                 price: props.event.price,
@@ -109,7 +84,7 @@ const EventCard = (props) => {
                 reservationType: 'events',
                 Total_price: qty * props.event.price,
                 reservedDate: props.reservedDate,
-                description: `This is ${props.event.name} with ${total_people} peoples Added for the ${new Date(props.reservedDate)}.`
+                description: `This is ${props.event.name} with ${totalPeople} peoples Added for the ${new Date(props.reservedDate)}.`
             }
             dispatch(addItemToCart(e));
             toast.success(`${props.event.name} added to the cart`);

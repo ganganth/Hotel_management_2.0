@@ -170,13 +170,13 @@ const Booking = () => {
 
                             <div className="form-check">
                                 <input className="form-check-input ml-25" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value={board} onChange={() => setBoard(false)} checked={!board} />
-                                <label className="form-check-label user-select-none" title="Includes bed, breakfast and evening meal (no lunch)." for="flexRadioDefault1" style={{ cursor: "pointer" }}>
+                                <label className="form-check-label user-select-none" title="Includes bed, breakfast and evening meal (no lunch)." htmlFor="flexRadioDefault1" style={{ cursor: "pointer" }}>
                                     Half Board
                                 </label>
                             </div>
                             <div className="form-check">
                                 <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value={board} checked={board} onChange={() => setBoard(true)} />
-                                <label className="form-check-label user-select-none" title="Includes bed, breakfast,lunch and evening meal." for="flexRadioDefault2" style={{ cursor: "pointer" }}>
+                                <label className="form-check-label user-select-none" title="Includes bed, breakfast,lunch and evening meal." htmlFor="flexRadioDefault2" style={{ cursor: "pointer" }}>
                                     Full board
                                 </label>
                             </div>
@@ -185,39 +185,39 @@ const Booking = () => {
 
                     <div className="row" style={{ height: "25%", marginTop: "5%" }}>
                         <div className="col-md-3 d-flex" style={!(checkOutDate !== '' || (items.find(i => i.reservationType  === 'rooms'))) ? { pointerEvents: "none", opacity: "0.5" } : {}}>
-                            <div class="card w-80 m-auto" >
-                                <div class="card-body">
-                                    <h5 class="card-title user-select-none" style={{ color: "black" }}>Room Reservation</h5>
-                                    <p class="card-text user-select-none">Booking your room today will ensure your accommodation is secured for your desired dates.</p>
+                            <div className="card w-80 m-auto" >
+                                <div className="card-body">
+                                    <h5 className="card-title user-select-none" style={{ color: "black" }}>Room Reservation</h5>
+                                    <p className="card-text user-select-none">Booking your room today will ensure your accommodation is secured for your desired dates.</p>
                                     {/* <a href="/rooms" class="btn btn-primary">Add Reservation</a> */}
-                                    <button type="button" class="btn btn-primary" onClick={() => setRoomOrder(true)}>Add Reservation</button>
+                                    <button type="button" className="btn btn-primary" onClick={() => setRoomOrder(true)}>Add Reservation</button>
                                 </div>
                             </div>
                         </div>
                         <div className="col-md-3 d-flex " style={!(items.find(i => i.reservationType  === 'rooms')) ? { pointerEvents: "none", opacity: "0.5" } : {}}>
-                            <div class="card w-80 m-auto">
-                                <div class="card-body">
-                                    <h5 class="card-title user-select-none" style={{ color: "black" }}>Food Reservation</h5>
-                                    <p class="card-text user-select-none">Ordering some food will satisfy your hunger and provide you with a delicious meal delivered right to your doorstep.</p>
-                                    <button type="button" class="btn btn-primary" onClick={() => setFoodOrder(true)}>Add Reservation</button>
+                            <div className="card w-80 m-auto">
+                                <div className="card-body">
+                                    <h5 className="card-title user-select-none" style={{ color: "black" }}>Food Reservation</h5>
+                                    <p className="card-text user-select-none">Ordering some food will satisfy your hunger and provide you with a delicious meal delivered right to your doorstep.</p>
+                                    <button type="button" className="btn btn-primary" onClick={() => setFoodOrder(true)}>Add Reservation</button>
                                 </div>
                             </div>
                         </div>
                         <div className="col-md-3 d-flex" style={!(items.find(i => i.reservationType  === 'rooms')) ? { pointerEvents: "none", opacity: "0.5" } : {}}>
-                            <div class="card w-80 m-auto">
-                                <div class="card-body">
-                                    <h5 class="card-title user-select-none" style={{ color: "black" }}>Vehicle Reservation</h5>
-                                    <p class="card-text user-select-none">Renting a vehicle will provide you with the means to conveniently travel and explore your destination.</p>
-                                    <button type="button" class="btn btn-primary" onClick={() => setVehicleOrder(true)}>Add Reservation</button>
+                            <div className="card w-80 m-auto">
+                                <div className="card-body">
+                                    <h5 className="card-title user-select-none" style={{ color: "black" }}>Vehicle Reservation</h5>
+                                    <p className="card-text user-select-none">Renting a vehicle will provide you with the means to conveniently travel and explore your destination.</p>
+                                    <button type="button" className="btn btn-primary" onClick={() => setVehicleOrder(true)}>Add Reservation</button>
                                 </div>
                             </div>
                         </div>
                         <div className="col-md-3 d-flex" style={!(items.find(i => i.reservationType  === 'rooms')) ? { pointerEvents: "none", opacity: "0.5" } : {}} >
-                            <div class="card w-80 m-auto">
-                                <div class="card-body">
-                                    <h5 class="card-title user-select-none" style={{ color: "black" }}>Event Reservation</h5>
-                                    <p class="card-text user-select-none">Joining some events will allow you to immerse yourself in enriching experiences and connect with like-minded individuals.</p>
-                                    <button type="button" class="btn btn-primary" onClick={() => setEventOrder(true)}>Add Reservation</button>
+                            <div className="card w-80 m-auto">
+                                <div className="card-body">
+                                    <h5 className="card-title user-select-none" style={{ color: "black" }}>Event Reservation</h5>
+                                    <p className="card-text user-select-none">Joining some events will allow you to immerse yourself in enriching experiences and connect with like-minded individuals.</p>
+                                    <button type="button" className="btn btn-primary" onClick={() => setEventOrder(true)}>Add Reservation</button>
                                 </div>
                             </div>
                         </div>

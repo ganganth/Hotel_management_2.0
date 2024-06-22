@@ -28,7 +28,7 @@ const CommonEvents = (props) => {
                             {Array.from(Array(props.total_days), (e, i) => (
                                 <div className="form-check" key={i}>
                                     <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled  />
-                                    <button type="button" class="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => commonEventsFunc(i + 1)}>Day {i + 1} </button>
+                                    <button type="button" className="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => commonEventsFunc(i + 1)}>Day {i + 1} </button>
                                 </div>
                             ))}
                         </div>
