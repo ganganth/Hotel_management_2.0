@@ -5,7 +5,7 @@ const {auth, isEmployee} = require('../middleware/auth');
 
 router.use(auth);
 
-const {createNewVehicle, updateVehicleImages, getAllVehicles, deleteVehicle, updateVehicle, getSingleVehicle, searchRentalVehicles, createNewRental, getSingleRental, updateRentalPayment, getAllRentalsOfPerson, getAllRentals,deleteCorder} = require('../controllers/vehicleControllers');
+const {createNewVehicle, updateVehicleImages, getAllVehicles, deleteVehicle, updateVehicle, getSingleVehicle, searchRentalVehicles, createNewRental, getSingleRental, updateRentalPayment, getAllRentalsOfPerson, getAllRentals,deleteCorder, getAllAvailableVehicles} = require('../controllers/vehicleControllers');
 
 router.route('/')
     .post(isEmployee, createNewVehicle) // create a new vehicle (employees & admins)
@@ -38,4 +38,7 @@ router.route('/rental/:rentalId')
 router.route('/rental/:id')
     .delete(deleteCorder) // Both employees and admins can access
 
+router.route('/booking/rent-allVehicle')
+    .get(getAllAvailableVehicles) 
+    
 module.exports = router;

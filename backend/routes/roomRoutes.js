@@ -8,7 +8,7 @@ const roomControllers = require('../controllers/roomControllers');
 router.use(auth);
 
 router.route('/')
-    .get(roomControllers.getAllRoomTypes)
+    .get(roomControllers.getAllRoomTypes) 
     .post(isEmployee, roomControllers.createNewRoomType)
 
 router.route('/images')
@@ -28,17 +28,17 @@ router.route('/bookings/monthly-report')
     .get(isEmployee, roomControllers.getMonthlyBookingsReport)
 
 router.route('/:id')
-    .get(roomControllers.getSingleRoomType)
+    .get(roomControllers.getSingleRoomType) 
 
 router.route('/bookings/available-rooms')
-    .get(roomControllers.getAvailableRoomsForBooking)
+    .get(roomControllers.getAvailableRoomsForBooking)//
 
 router.route('/bookings/all')
     .get(isEmployee, roomControllers.getAllBookings) // get all bookings (Admin, Employee)
     
 
 router.route('/bookings/:id')
-    .get(roomControllers.getSingleBooking) // get details about single booking
+    .get(roomControllers.getSingleBooking) // get details about single booking 
     .put(roomControllers.updateBookingPaymentStatus) // update booking payment status
 
 router.route('/bookings/customer/:id')

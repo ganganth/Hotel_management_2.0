@@ -2,8 +2,7 @@ import CustomerHeader from "./Home/CustomerHeader";
 import { useState,useEffect } from "react";
 import Datetime from 'react-datetime';
 import moment from 'moment';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectAllOrderFreeze, removeAllOrderFreeze, selectOtherOrderFreeze } from "../app/state/stateSlice";
+import { useSelector } from 'react-redux';
 import MenuList from "../features/foods/MenuList";
 import RoomList from "../features/rooms/RoomList";
 import VehicleRental from "../features/vehicles/VehicleRental";
@@ -19,11 +18,10 @@ const Booking = () => {
     const [vehicleOrder, setVehicleOrder] = useState(false);
     const [eventOrder, setEventOrder] = useState(false);
     const [roomOrder, setRoomOrder] = useState(false);
-    const dispatch = useDispatch();
     const { items } = useSelector(state => state.orderCart)
 
-    const allOrderFreeze = useSelector(selectAllOrderFreeze);
-    const otherOrderFreeze = useSelector(selectOtherOrderFreeze);
+    // const allOrderFreeze = useSelector(selectAllOrderFreeze);
+    // const otherOrderFreeze = useSelector(selectOtherOrderFreeze);
 
     const total_days = Math.ceil(((checkOutDate - checkInDate) / (24 * 60 * 60 * 1000))) + 1
     let total_breakfast, total_lunch, total_dinner;
@@ -86,12 +84,6 @@ const Booking = () => {
         return current.isBetween(checkInDate, futureDate, null, '[]');
     };
 
-    function setCheckOutDateFunc(date) {
-        setCheckOutDate(date);
-        // setAllOrderFreeze(false);
-        dispatch(removeAllOrderFreeze());
-    }
-
     useEffect(() => {
         if(items.find(i => i.reservationType  === 'rooms')){
             const roomsOrder = items.filter(i => i.reservationType === 'rooms');
@@ -129,6 +121,7 @@ const Booking = () => {
                     setEventOrder = {setEventOrder}
                     checkOutDate = {checkOutDate}
                     checkInDate = {checkInDate}
+                    total_days = {total_days}
                 />
             ) :  roomOrder ? (
                 <RoomList
@@ -136,6 +129,7 @@ const Booking = () => {
                     roomOrder = {roomOrder}
                     checkOutDate = {checkOutDate}
                     checkInDate = {checkInDate}
+                    total_days = {total_days}
                 />
             ): (
                 <>
@@ -167,7 +161,7 @@ const Booking = () => {
                                     <Datetime
                                         inputProps={{ id: 'dropoff-date-picker' }}
                                         value={checkOutDate}
-                                        onChange={(date) => setCheckOutDateFunc(date)}
+                                        onChange={(date) => setCheckOutDate(date)}
                                         timeFormat="HH A"
                                         isValidDate={valid2}
                                     />
@@ -190,7 +184,7 @@ const Booking = () => {
                     </div>
 
                     <div className="row" style={{ height: "25%", marginTop: "5%" }}>
-                        <div className="col-md-3 d-flex" style={allOrderFreeze ? { pointerEvents: "none", opacity: "0.5" } : {}}>
+                        <div className="col-md-3 d-flex" style={!(checkOutDate !== '' || (items.find(i => i.reservationType  === 'rooms'))) ? { pointerEvents: "none", opacity: "0.5" } : {}}>
                             <div class="card w-80 m-auto" >
                                 <div class="card-body">
                                     <h5 class="card-title user-select-none" style={{ color: "black" }}>Room Reservation</h5>
@@ -200,7 +194,7 @@ const Booking = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-md-3 d-flex " style={(allOrderFreeze || otherOrderFreeze) ? { pointerEvents: "none", opacity: "0.5" } : {}}>
+                        <div className="col-md-3 d-flex " style={!(items.find(i => i.reservationType  === 'rooms')) ? { pointerEvents: "none", opacity: "0.5" } : {}}>
                             <div class="card w-80 m-auto">
                                 <div class="card-body">
                                     <h5 class="card-title user-select-none" style={{ color: "black" }}>Food Reservation</h5>
@@ -209,7 +203,7 @@ const Booking = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-md-3 d-flex" style={(allOrderFreeze || otherOrderFreeze) ? { pointerEvents: "none", opacity: "0.5" } : {}}>
+                        <div className="col-md-3 d-flex" style={!(items.find(i => i.reservationType  === 'rooms')) ? { pointerEvents: "none", opacity: "0.5" } : {}}>
                             <div class="card w-80 m-auto">
                                 <div class="card-body">
                                     <h5 class="card-title user-select-none" style={{ color: "black" }}>Vehicle Reservation</h5>
@@ -218,7 +212,7 @@ const Booking = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-md-3 d-flex" style={(otherOrderFreeze || otherOrderFreeze) ? { pointerEvents: "none", opacity: "0.5" } : {}} >
+                        <div className="col-md-3 d-flex" style={!(items.find(i => i.reservationType  === 'rooms')) ? { pointerEvents: "none", opacity: "0.5" } : {}} >
                             <div class="card w-80 m-auto">
                                 <div class="card-body">
                                     <h5 class="card-title user-select-none" style={{ color: "black" }}>Event Reservation</h5>

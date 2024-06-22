@@ -167,6 +167,46 @@ const deleteCorder = async (req, res, next) => {
     }
 }
 
+const getAvailableEventCount = async (req, res, next) => {
+    const { eventId, reservedDate } = req.query;
+
+    if (!eventId || !reservedDate) {
+        return res.status(400).json({ message: 'Invalid Inputs' });
+    }
+
+    function formatDateForMySQL(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        const hours = ('0' + date.getHours()).slice(-2);
+        const minutes = ('0' + date.getMinutes()).slice(-2);
+        const seconds = ('0' + date.getSeconds()).slice(-2);
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    const formattedReservedDate = formatDateForMySQL(reservedDate);
+
+
+    try {
+        const [totalEventOrders] = await db.query("SELECT IFNULL((SELECT sum(quantity) FROM place_booking WHERE eventId = ? AND reserveDate = ? GROUP BY eventId,reserveDate),0) AS totalQuantity ", [eventId, formattedReservedDate])
+        const [totalStandardEventOrders] = await db.query("SELECT maxQuantity FROM event WHERE id = ?;", [eventId]);
+
+        const availableEventCount = totalStandardEventOrders[0].maxQuantity - totalEventOrders[0].totalQuantity
+        if (availableEventCount < 0) {
+            availableEventCount = 0;
+        }
+
+        res.status(200).json({ message: 'Success', count: availableEventCount });
+
+    } catch (err) {
+        next(err);
+    }
+
+}
+
+
 module.exports = {
     createNewEvent,
     getAllEvents,
@@ -178,5 +218,7 @@ module.exports = {
     createEventOrder,
     getAllEventOrdersOfCustomer,
     getAllEventOrders,
-    deleteCorder
+    deleteCorder,
+
+    getAvailableEventCount
 }

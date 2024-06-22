@@ -5,7 +5,7 @@ const {auth, isEmployee} = require('../middleware/auth');
 
 router.use(auth);
 
-const {createNewMenu, getAllMenus, deleteMenu, getSingleMenu, updateSingleMeal, getSingleMenuUser, createNewOrder, getPopularCategories, getAllOrdersOfACustomer, getAllFoodOrders, getSingleOrderDetails,deleteCorder,getSelectedMenus} = require('../controllers/foodControllers');
+const {createNewMenu, getAllMenus, deleteMenu, getSingleMenu, updateSingleMeal, getSingleMenuUser, createNewOrder, getPopularCategories, getAllOrdersOfACustomer, getAllFoodOrders, getSingleOrderDetails,deleteCorder,getSelectedMenus,getAvailableFoodCount} = require('../controllers/foodControllers');
 
 router.route('/')
     .get(getAllMenus)
@@ -37,10 +37,10 @@ router.route('/:menuId')
     .get(getSingleMenu)
     .delete(isEmployee, deleteMenu)
 
-
-
 router.route('/meal/update')
     .put(isEmployee, updateSingleMeal)
 
+router.route('/booking/foodItemOrder')
+    .get(getAvailableFoodCount)
 
 module.exports = router;

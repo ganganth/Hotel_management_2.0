@@ -59,9 +59,9 @@ const Events = (props) => {
 
         <>
             {   special ? (
-                <SpecialEvents setSpecial={setSpecial} specialEvents={specialEvents} />
+                <SpecialEvents setSpecial={setSpecial} specialEvents={specialEvents} total_days = {props.total_days} checkOutDate = {props.checkOutDate} checkInDate = {props.checkInDate}/>
             ) : common ? (
-                <CommonEvents setCommon={setCommon} commonEvents={commonEvents} />
+                <CommonEvents setCommon={setCommon} commonEvents={commonEvents} total_days = {props.total_days} checkOutDate = {props.checkOutDate} checkInDate = {props.checkInDate}/>
             ) : (
                 <>
                     <p className="text-center user-select-none" style={{ fontSize: '20px', fontWeight: 600 }}>Enjoy with the moments...</p>

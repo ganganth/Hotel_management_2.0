@@ -80,7 +80,7 @@ const VehicleCard = (props) => {
                             <Badge bg='dark'>{props.vehicle.type.charAt(0).toUpperCase() + props.vehicle.type.slice(1)}</Badge>
 
                         </p>
-                        <button className='btn btn-primary rounded mx-5 d-flex align-items-center justify-content-center gap-2' style={{ fontWeight: 500, width: '200px', fontSize: '18px' }} onClick={() => props.vehicleRentFunc()} >Rent Now <MdDoubleArrow fontSize={25} /></button>
+                        <button className='btn btn-primary rounded mx-5 d-flex align-items-center justify-content-center gap-2' style={{ fontWeight: 500, width: '200px', fontSize: '18px' }} onClick={() => props.handleVehiclePopup(props.vehicle)} >Rent Now <MdDoubleArrow fontSize={25} /></button>
                     </div>
 
                 </div>
@@ -103,7 +103,7 @@ const VehicleCard = (props) => {
                         <p className='d-flex flex-column align-items-start m-0'>
                             <span style={{ fontSize: '14px', fontWeight: 700 }}>Pick Up Policy</span>
                             <span style={{ fontSize: '16px' }}>
-                                {props.vehicle.pickupPolicy === 'delivery' ? 'Delivery Only' : props.vehicle.pickupPolicy === 'on-hotel-premise' ? 'No Delivery, On Hotel Premise Only' : 'Both Delivery And Hotel Premise'}
+                                {props.vehicle.pickupPolicy === 'delivery' ? 'Delivery Only' : props.vehicle.pickupPolicy === 'both' ? 'Both Delivery And Hotel Premise' : 'No Delivery, On Hotel Premise Only'}
                             </span>
                         </p>
                     </div>

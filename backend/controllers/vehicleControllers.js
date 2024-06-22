@@ -324,7 +324,64 @@ const deleteCorder = async (req, res, next) => {
     }
 }
 
+const getAllAvailableVehicles = async (req, res, next) => {
+    const { checkInDate, checkOutDate } = req.query;
 
+    if (!checkInDate || !checkOutDate) {
+        return res.status(400).json({ message: 'Invalid Inputs' });
+    }
+
+    function formatDateForMySQL(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        const hours = ('0' + date.getHours()).slice(-2);
+        const minutes = ('0' + date.getMinutes()).slice(-2);
+        const seconds = ('0' + date.getSeconds()).slice(-2);
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    const formattedCheckInDate = formatDateForMySQL(checkInDate);
+    const formattedCheckOutDate = formatDateForMySQL(checkOutDate);
+
+    try {
+        const [results] = await db.query('SELECT * FROM vehicle');
+        const vehiclesData = [];
+
+        const [totalVehicleOrders] = await db.query("SELECT pb.vehicleId, SUM(pb.quantity) As totalQuantity FROM place_booking pb INNER JOIN booking b ON b.id = pb.bookingId WHERE (b.checkOutDate < ? AND b.checkInDate > ?) GROUP BY pb.vehicleId, b.checkInDate, b.checkOutDate",[formattedCheckOutDate,formattedCheckInDate])
+
+        for (let i = 0; i < totalVehicleOrders.length; i++) {
+            const order = totalVehicleOrders[i];
+            const vehicleId = order.vehicleId;
+            const totalQuantity = order.totalQuantity;
+    
+            const vehicleToUpdate = results.find(r => r.id === vehicleId);
+            if (vehicleToUpdate) {
+                vehicleToUpdate.quantity -= totalQuantity;
+            }
+        }
+
+        results.forEach(async result => {
+            const [imagesData] = await db.query('SELECT url, fileName FROM vehicle_image WHERE vehicleId = ?', [result.id]);
+            const [featuresData] = await db.query('SELECT feature FROM vehicle_feature WHERE vehicleId = ?', [result.id]);
+            vehiclesData.push({
+                ...result,
+                additionalFeatures: featuresData.map(f => f.feature),
+                images: imagesData
+            });
+
+            if(vehiclesData.length === results.length) {
+                res.status(200).json({message: 'success', data: vehiclesData});
+            }
+        })
+
+    } catch (err) {
+        next(err);
+    }
+
+}
 
 module.exports = {
     createNewVehicle,
@@ -333,7 +390,7 @@ module.exports = {
     getSingleVehicle,
     deleteVehicle,
     updateVehicle,
-
+    getAllAvailableVehicles,
     getAllRentals,
     getAllRentalsOfPerson,
     searchRentalVehicles,

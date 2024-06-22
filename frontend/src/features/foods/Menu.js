@@ -21,6 +21,7 @@ const Menu = (props) => {
             try {
                 const response = await axiosPrivate.get(`/api/foods/user/${props.menuId}`);
                 setMenu(response.data.menu);
+                console.log(response.data.menu)
             } catch (err) {
                 console.log(err);
             } finally {
@@ -30,8 +31,7 @@ const Menu = (props) => {
         getMenuData();
     }, [axiosPrivate, props.menuId]);
     
-    console.log("menu",menu)
-
+   
     return (
 
         <>
@@ -88,6 +88,7 @@ const Menu = (props) => {
                                         reservedDate = {props.reservedDate}
                                         categoryId = {cat.id}
                                         menu = {menu}
+                                        setCreateFoodOrder  = {props.setCreateFoodOrder }
                                     />
                                 ))}
                             </div>

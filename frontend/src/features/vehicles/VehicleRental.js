@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-
+import { addItemToCart } from '../../app/ordersCart/orderCartSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import 'react-datetime/css/react-datetime.css';
 import VehicleCard from '../../components/VehicleCard';
 import VehiclePopUp from './VehiclePopUp';
 import { Row, Col, Spinner } from 'react-bootstrap';
-
+import { toast } from 'react-toastify';
 
 const VehicleRental = (props) => {
 
@@ -14,19 +15,16 @@ const VehicleRental = (props) => {
     const [loading, setLoading] = useState(true);
     const [popup, setPopup] = useState(false);
     const [pickUp, setPickup] = useState(true);
-
-    // const [modelState, setModelState] = useState({
-    //     isOpen: false,
-    //     vehicle: null
-    // });
-
-    // const [pickupDate, setPickupDate] = useState(new Date());
-    // const [dropoffDate, setDropoffDate] = useState('');
+    const [pickupPolicy, setPickUpPolicy] = useState('');
+    const dispatch = useDispatch();
+    const { items } = useSelector(state => state.orderCart);
+    const [vehiclesPD, setVehiclesPD] = useState([]);
+    const pickupCharge =100;
 
     useEffect(() => {
         const getAllVehicleData = async () => {
             try {
-                const response = await axiosPrivate.get('/api/vehicles/');
+                const response = await axiosPrivate.get(`/api/vehicles/booking/rent-allVehicle?checkInDate=${props.checkInDate}&checkOutDate=${props.checkOutDate}`);
                 setVehicles(response.data.data);
                 setLoading(false);
             } catch (err) {
@@ -35,94 +33,59 @@ const VehicleRental = (props) => {
             }
         }
         getAllVehicleData();
-    }, [axiosPrivate])
+    }, [axiosPrivate, props.checkOutDate, props.checkInDate])
     console.log(vehicles)
 
-    const vehicleRentFunc = () => {
-        setPopup(true)
+    const vehicleRentFunc = (v) => {
+
+        const isFound = items.find(i =>
+            i.reservationType === 'vehicle'
+            && i.id === v.id
+            && (i.quantity + 1) > v.quantity
+        );
+
+        if (isFound) {
+            toast.warning(`No Vehicle are available`)
+        }
+        else {
+            const r = {
+                id: v.id,
+                image: v.images[0].url,
+                quantity: 1,
+                name: v.name,
+                price: v.price,
+                checkInDate: props.checkInDate,
+                checkOutDate: props.checkOutDate,
+                reservationType: 'vehicle',
+                Total_price: ((v.fuelPolicy === 'full-to-empty' || v.fuelPolicy === 'none') ? (v.price -(v.price*v.discount/100)) : pickUp ? (((v.price -(v.price*v.discount/100)) * props.total_days) + pickupCharge) : ((v.price -(v.price*v.discount/100)) * props.total_days)) ,
+                description: `This is ${v.name} with brand ${v.brand} vehicle.`,
+                fuelPolicy: v.fuelPolicy,
+                pickupPolicy: v.pickupPolicy
+            }
+
+            dispatch(addItemToCart(r));
+            toast.success(`${v.name} added to the cart`);
+
+
+        }
     }
-
-    const handleVehicleRent = () => {
-        setPopup(false)
+    const handleVehiclePopup = (v) => {
+        setPopup(true);
+        setVehiclesPD(v);
+        setPickUpPolicy('');
+        setPickup(false);
+        if(v.pickupPolicy ==='both' || v.pickupPolicy === 'delivery'){
+            setPickUpPolicy(v.pickupPolicy);
+            setPickup(true);
+        }
     }
-
-
-    // const yesterday = moment().subtract( 1, 'day' );
-    // const valid1 = function( current ){
-
-    //     return current.isAfter( yesterday );
-    // };
-
-    // const valid2 = function( current ){
-    //     //console.log(current);
-    //     const currentDate = moment(current);
-    //     const selectedDate = moment(pickupDate);
-
-    //     const daysDiff = Math.abs(selectedDate.diff(currentDate, 'days'))
-    //     let futureDay;
-    //     //console.log(new Date(moment(new Date())).toDateString());
-    //     //console.log(new Date(moment(pickupDate)).toDateString());
-    //     if(new Date(moment(pickupDate)).toDateString() === new Date(moment(new Date())).toDateString()) {
-    //        futureDay = moment().add(daysDiff - 1, 'day');
-    //     } else {
-    //         futureDay = moment().add(daysDiff, 'day');
-    //     }
-    //     return current.isAfter( futureDay );
-    // };
-
-    // const handleModelState = (vehicle) => {
-    //     setModelState({
-    //         isOpen: true,
-    //         vehicle
-    //     });
-    // }
-
-    // const handleModelClose = () => {
-    //     setModelState({
-    //         isOpen: false,
-    //         vehicle: null
-    //     });
-    // }
-
-    // function getHours(date1, date2) {
-    //     const millieSeconds = Math.abs(date2 - date1);
-    //     return millieSeconds / (1000 * 60 * 60);
-    // }
-
-    // const handleVehicleSearch = async () => {
-
-    //     // check for the dropOffDate before search
-    //     if(!dropoffDate && dropoffDate.trim() === '') return toast.error('please select drop off date');
-
-    //     setIsSearching(true);
-
-    //     const pickupDateString = moment(pickupDate).toDate();
-    //     const dropoffDateString = moment(dropoffDate).toDate();
-
-    //     const sqlPickupDate = `${pickupDateString.getFullYear()}-${pickupDateString.getMonth() + 1}-${pickupDateString.getDate()} ${pickupDateString.getHours()}:00:00`;
-    //     const sqlDropoffDate = `${dropoffDateString.getFullYear()}-${dropoffDateString.getMonth() + 1}-${dropoffDateString.getDate()} ${dropoffDateString.getHours()}:00:00`;
-
-    //     // console.log(getHours(new Date(sqlPickupDate), new Date(sqlDropoffDate)));
-
-    //     try {
-    //         // MAKE THE API CALL TO FETCH AVAILABLE VEHICLES
-    //         const response = await axiosPrivate.get(`/api/vehicles/rental/search?pickupDate=${sqlPickupDate}&dropoffDate=${sqlDropoffDate}`);
-    //         console.log(response);
-    //         setIsOnceSearched(true);
-    //         setResultVehicles(response.data.vehicles);
-    //         setIsSearching(false);
-    //     } catch (err) {
-    //         console.log(err.response.data?.message || 'Internal server error');
-    //         setIsSearching(false);
-    //     }
-    // }
 
     return (
         <>
             <div style={popup ? { pointerEvents: "none", opacity: "0.1", backgroundColor: "rgba(0, 0, 0, 0.7)" } : {}}>
 
                 <div>
-                    <h6 className="text-center" style={{ fontSize: '25px', fontWeight: 500 }}>Your Comprehensive Resource for Car Rentals and Exploration !</h6>
+                    <h6 className="text-center" style={{ fontSize: '25px', fontWeight: 500 }}>Your Comprehensive Resource for Vehicle Rentals and Exploration !</h6>
                     <button className='btn btn-primary' style={{ marginLeft: "87%" }} onClick={() => props.setVehicleOrder(false)}>Go Back</button>
                 </div>
                 <hr></hr>
@@ -149,7 +112,7 @@ const VehicleRental = (props) => {
 
                         <Row className='my-5'>
                             <Col md={12}>
-                                {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} isEditable={false} isRentalBtnVisible={true} vehicleRentFunc={vehicleRentFunc} />)
+                                {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} isEditable={false} isRentalBtnVisible={true} handleVehiclePopup={handleVehiclePopup} />)
                                 }
                             </Col >
 
@@ -160,7 +123,16 @@ const VehicleRental = (props) => {
 
 
             </div>
-            <VehiclePopUp pickUp={pickUp} setPickup={setPickup} handleVehicleRent={handleVehicleRent} trigger={popup} setPopup={setPopup} total_days={props.total_days} />
+            <VehiclePopUp
+                pickUp={pickUp}
+                setPickup={setPickup}
+                trigger={popup}
+                setPopup={setPopup}
+                total_days={props.total_days}
+                pickupPolicy={pickupPolicy}
+                vehicleRentFunc={vehicleRentFunc}
+                vehiclesPD={vehiclesPD}
+            />
         </>
     );
 }

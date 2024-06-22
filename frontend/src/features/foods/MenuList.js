@@ -18,6 +18,7 @@ const MenuList = (props) => {
     const [viewMenu, setViewMenu] = useState(false);
     const [createFoodOrder,setCreateFoodOrder] = useState(false)
     const [reservedDate, setReserverDate] = useState({})
+    const [mealType, setMealType] = useState('');
     
      useEffect(() => {
         const getAllMenus = async () => {
@@ -54,7 +55,7 @@ const MenuList = (props) => {
         setDinner(false);
         setMenus([]);
         getSelected(2);
-         
+        setMealType('Lunch');
     }
 
     const BreakfastFunc = (id) => {
@@ -65,6 +66,7 @@ const MenuList = (props) => {
         setDinner(false);
         setMenus([]);
         getSelected(1);
+        setMealType('Breakfast');
     }
 
     const DinnerFunc = (id) => {
@@ -76,6 +78,7 @@ const MenuList = (props) => {
         setMenus([]);
         console.log(dayNumber)
         getSelected(3);
+        setMealType('Dinner');
     }
 
     const viewMenuFunc = (id) => {
@@ -100,11 +103,11 @@ const MenuList = (props) => {
                 />
             ) : (
                 <>
-                    <div className="card">
+                    <div className="card shadow-none">
                         <div className="card-header text-center fw-bold">
                             Apply You flavour
                         </div>
-                        <div className='card-body'>
+                        <div className='card-body '>
                             <div className="row row-cols-1 row-cols-md-3 g-4">
                                 <div className="col">
                                     {props.totalBreakfast > 0 && (
@@ -112,7 +115,7 @@ const MenuList = (props) => {
                                             <div className='card-body'>
                                                 {Array.from(Array(props.totalBreakfast), (e, i) => (
                                                     <div className="form-check" key={i}>
-                                                        <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i+1)} />
+                                                        <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i+1) && mealType === 'Breakfast'} />
                                                         <button type="button" class="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => BreakfastFunc(i + 1)}>Day {i + 1} Breakfast</button>
                                                     </div>
                                                 ))}
@@ -126,7 +129,7 @@ const MenuList = (props) => {
                                             <div className='card-body'>
                                                 {Array.from(Array(props.totalLunch), (e, i) => (
                                                     <div className="form-check" key={i}>
-                                                        <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i+1)} />
+                                                        <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i+1) && mealType === 'Lunch'} />
                                                         <button type="button" class="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => lunchFunc(i + 1)}>Day {i + 1} Lunch</button>
                                                     </div>
                                                 ))}
@@ -141,7 +144,7 @@ const MenuList = (props) => {
                                             <div className='card-body'>
                                                 {Array.from(Array(props.totalDinner), (e, i) => (
                                                     <div className="form-check" key={i}>
-                                                        <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i+1)} />
+                                                        <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i+1) && mealType === 'Dinner'} />
                                                         <button type="button" class="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => DinnerFunc(i + 1)}>Day {i + 1} Dinner</button>
                                                     </div>
                                                 ))}

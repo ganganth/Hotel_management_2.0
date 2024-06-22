@@ -16,7 +16,7 @@ const orderCartSlice = createSlice({
                 const found = state.items.find(i => i.reservationType === 'rooms' && i.id === item.id && i.name === item.name);
                 if (found) {
                     found.quantity += item.quantity;
-                    found.Total_price = found.quantity * item.price;
+                    found.Total_price = found.quantity * item.Total_price;
                     itemUpdated = true;
                 }
             }
@@ -29,16 +29,18 @@ const orderCartSlice = createSlice({
                 }
             }
             if (state.items.find(i => i.reservationType === 'vehicle')) {
-                const found = state.items.find(i => i.id === item.id);
+                const found = state.items.find(i => i.reservationType === 'vehicle' && i.id === item.id);
                 if (found) {
                     found.quantity += item.quantity;
+                    found.Total_price = found.quantity * item.Total_price;
                     itemUpdated = true;
                 }
             }
             if (state.items.find(i => i.reservationType === 'events')) {
-                const found = state.items.find(i => i.id === item.id);
+                const found = state.items.find(i => i.reservationType === 'events' && i.id === item.id);
                 if (found) {
-                    found.quantity += item.quantity;
+                    found.Total_price += item.Total_price;
+                    found.quantity = 1;
                     itemUpdated = true;
                 }
             }
@@ -50,6 +52,12 @@ const orderCartSlice = createSlice({
         removeRoomItemFromCart: (state, action) => {
             const item = action.payload;
             state.items = state.items.filter(e => e.id !== item.id && e.name !== item.name);
+            // without any room orders other orders does not exist
+            const roomLength = state.items.filter(i => i.reservationType === 'rooms').length;
+            if(roomLength === 0 ){
+                state.items = [];
+            }
+
         },
         removeFoodItemFromCart: (state, action) => {
             const {menuId, categoryId,mealId,reservedDate} = action.payload;
@@ -60,8 +68,8 @@ const orderCartSlice = createSlice({
             state.items = state.items.filter(e => e.id !== item.id && e.name !== item.name);
         },
         removeVehicleItemFromCart: (state, action) => {
-            const item = action.payload;
-            state.items = state.items.filter(e => e.id !== item.id && e.name !== item.name);
+            const {eventId,reservedDate} = action.payload;
+            state.items = state.items.filter(e => !(e.id === eventId && new Date(e.reservedDate).getTime() === new Date(reservedDate).getTime()));
         },
                 
         clearCart: (state) => {

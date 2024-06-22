@@ -28,7 +28,7 @@ const RoomCard = (props) => {
     const getSingleRoomType = async (id) => {
         console.log(id);
         try {
-            const response = await axiosPrivate.get(`/api/rooms/${id}`);
+            const response = await axiosPrivate.get(`/api/rooms/bookings/available-rooms?roomType=${id}&checkInDate=${props.checkInDate}&checkOutDate=${props.checkOutDate}`);
             console.log("Single room data:", response.data);
             setSingleRoom(response.data.room);
         } catch (err) {
@@ -53,6 +53,7 @@ const RoomCard = (props) => {
                     setSingleRoom ={setSingleRoom}
                     checkOutDate = {props.checkOutDate}
                     checkInDate = {props.checkInDate}
+                    total_days = {props.total_days}
                 />
             ) : (
                 <div className="row justify-content-center mb-5" >

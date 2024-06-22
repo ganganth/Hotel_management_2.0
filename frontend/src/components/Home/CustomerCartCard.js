@@ -26,7 +26,7 @@ const CustomerCartCard = (props) => {
                                                 </tr>
                                                 <tr>
                                                     <td>Total cost :</td>
-                                                    <td>$ {d.Total_price}</td>
+                                                    <td>$ {d.Total_price.toFixed(2)}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

@@ -49,7 +49,7 @@ const RoomView = (props) => {
                 checkInDate: props.checkInDate,
                 checkOutDate: props.checkOutDate,
                 reservationType: 'rooms',
-                Total_price: room.totalPrice,
+                Total_price: room.totalPrice * (props.total_days - 1),
                 description: `This is ${room.name} with ${room.bedType}.`
             }
 

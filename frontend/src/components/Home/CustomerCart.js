@@ -36,7 +36,7 @@ const CustomerCart = () => {
 
         const Discount = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice ) * 0.1;
         const GovernmentTax = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice ) * 0.05;
-        const Total = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice ) - (Discount + GovernmentTax)
+        const Total = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice + GovernmentTax ) - Discount 
 
         setRoomsOrder(roomsOrder);
         setFoodsOrder(foodsOrder);
@@ -125,31 +125,31 @@ const CustomerCart = () => {
                                 <tbody>
                                     <tr>
                                         <td>Total for rooms</td>
-                                        <td>$ {roomT}</td>
+                                        <td>$ {roomT.toFixed(2)}</td>
                                     </tr>
                                     <tr>
                                         <td>Total for foods</td>
-                                        <td>$ {foodT}</td>
+                                        <td>$ {foodT.toFixed(2)}</td>
                                     </tr>
                                     <tr>
                                         <td>Total for vehicle</td>
-                                        <td>$ {vehicleT}</td>
+                                        <td>$ {vehicleT.toFixed(2)}</td>
                                     </tr>
                                     <tr>
                                         <td>Total for other events</td>
-                                        <td>$ {eventT}</td>
+                                        <td>$ {eventT.toFixed(2)}</td>
                                     </tr>
                                     <tr>
                                         <td>Government  Tax</td>
-                                        <td>$ {tax}</td>
+                                        <td>$ {tax.toFixed(2)}</td>
                                     </tr>
                                     <tr>
                                         <td>Discount</td>
-                                        <td>$ {discount}</td>
+                                        <td>$ {discount.toFixed(2)}</td>
                                     </tr>
                                     <tr>
                                         <td></td>
-                                        <td>$ {total}</td>
+                                        <td>$ {total.toFixed(2)}</td>
                                     </tr>
                                 </tbody>
                             </table>

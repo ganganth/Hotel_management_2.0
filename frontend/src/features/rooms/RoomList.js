@@ -64,6 +64,7 @@ const RoomList = (props) => {
                         setMoreRoomView={setMoreRoomView}
                         checkOutDate = {props.checkOutDate}
                         checkInDate = {props.checkInDate}
+                        total_days = {props.total_days}
                     />
                 ))}
             </div>
