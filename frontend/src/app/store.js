@@ -1,9 +1,9 @@
 import {configureStore,getDefaultMiddleware } from '@reduxjs/toolkit';
 
 import authReducer from './auth/authSlice';
-import foodCartReducer from './foodCart/foodCartSlice';
-import eventCartReducer from './eventCart/eventSlice';
-import stateReducer from './state/stateSlice'
+// import foodCartReducer from './foodCart/foodCartSlice';
+// import eventCartReducer from './eventCart/eventSlice';
+// import stateReducer from './state/stateSlice'
 import orderCartReducer from './ordersCart/orderCartSlice'
 
 // Function to save Redux state to local storage
@@ -34,9 +34,9 @@ const persistedState = loadStateFromLocalStorage();
 const store = configureStore({
     reducer: {
         auth: authReducer,
-        foodCart: foodCartReducer,
-        eventCart: eventCartReducer,
-        state: stateReducer,
+        // foodCart: foodCartReducer,
+        // eventCart: eventCartReducer,
+        // state: stateReducer,
         orderCart: orderCartReducer
     },
     middleware: getDefaultMiddleware({

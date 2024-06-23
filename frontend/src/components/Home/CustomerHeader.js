@@ -1,13 +1,14 @@
 
 import { MdAddShoppingCart, MdArrowDropDown } from "react-icons/md";
 import { logoutAuthUser } from "../../app/auth/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { useState } from "react";
 
 const CustomerHeader = () => {
 
     const dispatch = useDispatch();
     const [popup, setPopup] = useState(false);
+    const {items} = useSelector(state => state.orderCart)
     
     return (
         <ul className="nav justify-content-end bg-light">
@@ -16,7 +17,10 @@ const CustomerHeader = () => {
                 <a className="navbar-text" href="/customerCart" >
 
                     <MdAddShoppingCart style={{ height: '30px', width: '30px', color: 'black', marginLeft: '10px', marginTop: '2px', marginBottom: '2px' }} />
-
+                    {items.length > 0 && (
+                        <span className='position-absolute bg-danger text-white d-flex align-items-center justify-content-center' style={{top: '0', right: '5%', width: '20px', height: '20px', borderRadius: '50%', fontSize: '12px', fontWeight: 500}}>{items.length}</span>
+                    )}
+                    
                 </a>
             </li>
             <li className="nav-item">

@@ -69,8 +69,8 @@ const orderCartSlice = createSlice({
             state.items = state.items.filter(e => e.id !== item.id && e.name !== item.name);
         },
         removeVehicleItemFromCart: (state, action) => {
-            const {eventId,reservedDate} = action.payload;
-            state.items = state.items.filter(e => !(e.id === eventId && new Date(e.reservedDate).getTime() === new Date(reservedDate).getTime()));
+            const {id} = action.payload;
+            state.items = state.items.filter(e => e.id !== id );
         },
                 
         clearCart: (state) => {

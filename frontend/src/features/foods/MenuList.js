@@ -16,11 +16,11 @@ const MenuList = (props) => {
     const [dayNumber, setDayNumber] = useState('');
     const [menuId, setMenuId] = useState('');
     const [viewMenu, setViewMenu] = useState(false);
-    const [createFoodOrder,setCreateFoodOrder] = useState(false)
+    const [createFoodOrder, setCreateFoodOrder] = useState(false)
     const [reservedDate, setReserverDate] = useState({})
     const [mealType, setMealType] = useState('');
-    
-     useEffect(() => {
+
+    useEffect(() => {
         const getAllMenus = async () => {
             try {
                 const response = await axiosPrivate.get('/api/foods');
@@ -85,78 +85,75 @@ const MenuList = (props) => {
         setViewMenu(true);
         setMenuId(id)
     }
-  
+
     const createDate = (dayNumber) => {
-        const checkInDate = moment(props.checkInDate); 
-        const formatReservedDate = checkInDate.add((dayNumber-1), 'days');
-        setReserverDate(formatReservedDate.toDate()); 
+        const checkInDate = moment(props.checkInDate);
+        const formatReservedDate = checkInDate.add((dayNumber - 1), 'days');
+        setReserverDate(formatReservedDate.toDate());
     };
 
     return (
         <>
             {viewMenu ? (
-                <Menu 
-                    menuId = {menuId}
-                    setViewMenu = {setViewMenu}
-                    setCreateFoodOrder = {setCreateFoodOrder}
-                    reservedDate = {reservedDate}
+                <Menu
+                    menuId={menuId}
+                    setViewMenu={setViewMenu}
+                    setCreateFoodOrder={setCreateFoodOrder}
+                    reservedDate={reservedDate}
                 />
             ) : (
                 <>
-                    <div className="card shadow-none">
-                        <div className="card-header text-center fw-bold">
-                            Apply You flavour
-                        </div>
-                        <div className='card-body '>
-                            <div className="row row-cols-1 row-cols-md-3 g-4">
-                                <div className="col">
-                                    {props.totalBreakfast > 0 && (
-                                        <div className="card">
-                                            <div className='card-body'>
-                                                {Array.from(Array(props.totalBreakfast), (e, i) => (
-                                                    <div className="form-check" key={i}>
-                                                        <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i+1) && mealType === 'Breakfast'} />
-                                                        <button type="button" className="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => BreakfastFunc(i + 1)}>Day {i + 1} Breakfast</button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="col">
-                                    {props.totalLunch > 0 && (
-                                        <div className="card">
-                                            <div className='card-body'>
-                                                {Array.from(Array(props.totalLunch), (e, i) => (
-                                                    <div className="form-check" key={i}>
-                                                        <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i+1) && mealType === 'Lunch'} />
-                                                        <button type="button" className="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => lunchFunc(i + 1)}>Day {i + 1} Lunch</button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="col">
-                                    {props.totalDinner > 0 && (
-                                        <div className="card">
-                                            <div className='card-body'>
-                                                {Array.from(Array(props.totalDinner), (e, i) => (
-                                                    <div className="form-check" key={i}>
-                                                        <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i+1) && mealType === 'Dinner'} />
-                                                        <button type="button" className="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => DinnerFunc(i + 1)}>Day {i + 1} Dinner</button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            <button className='btn btn-primary' style={{ marginLeft: "87%" }} onClick={() => props.setFoodOrder(false)}>Go Back</button>
-                        </div>
-                    </div>
+                    <h1 className='text-center user-select-none mb-4 fz-1' style={{fontSize:"20px"}}>Apply You flavour</h1>
+                    <button className='btn btn-primary' style={{ marginLeft: "85%" }} onClick={() => props.setFoodOrder(false)}>Go Back</button>
                     <hr></hr>
+                    <div className='card-body '>
+                        <div className="row row-cols-1 row-cols-md-3 g-4">
+                            <div className="col">
+                                {props.totalBreakfast > 0 && (
+                                    <div className="card">
+                                        <div className='card-body'>
+                                            {Array.from(Array(props.totalBreakfast), (e, i) => (
+                                                <div className="form-check" key={i}>
+                                                    <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i + 1) && mealType === 'Breakfast'} />
+                                                    <button type="button" className="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => BreakfastFunc(i + 1)}>Day {i + 1} Breakfast</button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="col">
+                                {props.totalLunch > 0 && (
+                                    <div className="card">
+                                        <div className='card-body'>
+                                            {Array.from(Array(props.totalLunch), (e, i) => (
+                                                <div className="form-check" key={i}>
+                                                    <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i + 1) && mealType === 'Lunch'} />
+                                                    <button type="button" className="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => lunchFunc(i + 1)}>Day {i + 1} Lunch</button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="col">
+                                {props.totalDinner > 0 && (
+                                    <div className="card">
+                                        <div className='card-body'>
+                                            {Array.from(Array(props.totalDinner), (e, i) => (
+                                                <div className="form-check" key={i}>
+                                                    <input className="form-check-input" type="checkbox" value="" id={`defaultCheck${i}`} disabled checked={createFoodOrder && dayNumber === (i + 1) && mealType === 'Dinner'} />
+                                                    <button type="button" className="btn" style={{ paddingTop: "0", paddingBottom: "0" }} data-bs-toggle="button" onClick={() => DinnerFunc(i + 1)}>Day {i + 1} Dinner</button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                    </div>
 
                     {breakfast ? (
                         <>

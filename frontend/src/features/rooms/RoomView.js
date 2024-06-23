@@ -50,7 +50,10 @@ const RoomView = (props) => {
                 checkOutDate: props.checkOutDate,
                 reservationType: 'rooms',
                 Total_price: room.totalPrice * (props.total_days - 1),
-                description: `This is ${room.name} with ${room.bedType}.`
+                description: `This is ${room.name} with ${room.bedType}.`,
+                fullPaymentDiscount: room.fullPaymentDiscount,
+                totalNightsStay:(props.total_days - 1),
+                reservedDate:'NULL'
             }
 
             dispatch(addItemToCart(r));

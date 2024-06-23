@@ -49,7 +49,7 @@ const MenuMeal = (props) => {
             toast.error('Failed to fetch available food count');
             return;
         }
-    
+     
         const isFound = items.find(i =>
             i.reservationType === 'foods'
             && i.menuId === props.menu.id
