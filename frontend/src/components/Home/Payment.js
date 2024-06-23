@@ -63,7 +63,7 @@ const Payment = (props) => {
                 reservationType: item.reservationType,
                 total_quantity: item.quantity,
                 total_price: item.Total_price,
-                reserveDate: item.reservedDate
+                reserveDate: 'NULL'
             }));
             setFilteredVehiclesOrder(filteredArray);
         }
@@ -98,6 +98,7 @@ const Payment = (props) => {
     // }
 
     const addBooking = async (booking) => {
+
         try {
             await axiosPrivate.post('/api/rooms/bookings', JSON.stringify(booking));
             toast.success('Booking Successful');
@@ -134,7 +135,7 @@ const Payment = (props) => {
             throw new Error('Booking failed');
         }
         else{
-            // dispatch(clearCart());
+            dispatch(clearCart());
         }
     }
     return (
@@ -185,60 +186,60 @@ const Payment = (props) => {
                     <ListGroup.Item>
                         <Row className='justify-content-center'>
                             <Col md={6}>
-                                {/* <PayPalScriptProvider options={{ "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID }}>
-                                    {paymentType === 'full' && (
-                                        <PayPalButtons
-                                            style={{ layout: "horizontal" }}
-                                            createOrder={(data, actions) => {
-
-                                                return actions.order.create({
-                                                    purchase_units: [
-                                                        {
-                                                            amount: {
-                                                                value: calculateTotalPrice(),
-                                                            },
-                                                        },
-                                                    ],
-                                                });
-                                            }}
-                                            onApprove={(data, actions) => {
-                                                return actions.order.capture().then((details) => {
-                                                    handleBookingSuccess(details);
-                                                });
-                                            }}
-
-                                        />
-                                    )}
-
-                                    {paymentType === 'half' && (
-                                        <PayPalButtons
-                                            style={{ layout: "horizontal" }}
-                                            createOrder={(data, actions) => {
-
-                                                return actions.order.create({
-                                                    purchase_units: [
-                                                        {
-                                                            amount: {
-                                                                value: calculateTotalPrice(),
-                                                            },
-                                                        },
-                                                    ],
-                                                });
-                                            }}
-                                            onApprove={(data, actions) => {
-                                                return actions.order.capture().then((details) => {
-                                                    handleBookingSuccess(details);
-                                                });
-                                            }}
-
-                                        />
-                                    )}
-
-                                </PayPalScriptProvider> */}
                                 <PayPalScriptProvider options={{ "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID }}>
                                     {paymentType === 'full' && (
                                         <PayPalButtons
                                             style={{ layout: "horizontal" }}
+                                            createOrder={(data, actions) => {
+
+                                                return actions.order.create({
+                                                    purchase_units: [
+                                                        {
+                                                            amount: {
+                                                                value: calculateTotalPrice(),
+                                                            },
+                                                        },
+                                                    ],
+                                                });
+                                            }}
+                                            onApprove={(data, actions) => {
+                                                return actions.order.capture().then((details) => {
+                                                    handleBookingSuccess();
+                                                });
+                                            }}
+
+                                        />
+                                    )}
+
+                                    {paymentType === 'half' && (
+                                        <PayPalButtons
+                                            style={{ layout: "horizontal" }}
+                                            createOrder={(data, actions) => {
+
+                                                return actions.order.create({
+                                                    purchase_units: [
+                                                        {
+                                                            amount: {
+                                                                value: calculateTotalPrice(),
+                                                            },
+                                                        },
+                                                    ],
+                                                });
+                                            }}
+                                            onApprove={(data, actions) => {
+                                                return actions.order.capture().then((details) => {
+                                                    handleBookingSuccess();
+                                                });
+                                            }}
+
+                                        />
+                                    )}
+
+                                </PayPalScriptProvider>
+                                {/* <PayPalScriptProvider options={{ "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID }}>
+                                    {paymentType === 'full' && (
+                                        <PayPalButtons
+                                            style={{ layout: "horizontal" }}
                                             createOrder={async (data, actions) => {
                                                 try {
                                                     await handleBookingSuccess();
@@ -295,7 +296,7 @@ const Payment = (props) => {
                                             }}
                                         />
                                     )}
-                                </PayPalScriptProvider>
+                                </PayPalScriptProvider> */}
 
 
                             </Col>

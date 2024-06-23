@@ -4,8 +4,8 @@ import {useDispatch} from 'react-redux';
 import {loginSuccess} from '../app/auth/authSlice';
 import {Form, Button} from 'react-bootstrap';
 import {useNavigate,Link} from 'react-router-dom';
-import { resetState } from '../app/state/stateSlice';
-import { clearCart } from '../app/ordersCart/orderCartSlice';
+// import { resetState } from '../app/state/stateSlice';
+// import { clearCart } from '../app/ordersCart/orderCartSlice';
 
 import '../styles/login.css';
 
@@ -29,8 +29,8 @@ const Login = () => {
             const response = await axiosPublic.post('/api/auth/login', JSON.stringify({username,password}));
             console.log(response.data);
             dispatch(loginSuccess({accessToken: response.data.accessToken, user: response.data.user}));
-            dispatch(resetState());
-            dispatch(clearCart());
+            // dispatch(resetState());
+            // dispatch(clearCart());
             setLoading(false);
             if(response.data.user.role==='Customer'){
                 navigate('/booking');

@@ -219,65 +219,64 @@ const createNewBooking = async (req, res, next) => {
             foods
         } = req.body;
 
-    if ( !Array.isArray(events) || events.length <= 0 || !Array.isArray(vehicle) || vehicle.length <= 0 || !Array.isArray(foods) || foods.length <= 0 || !isPaid || !customerId || !checkInDate || !checkOutDate || !Array.isArray(rooms) || rooms.length <= 0 || !paymentType || !totalNightsStay || paidTotalPrice <= 0 || bookingTotalPrice <= 0) {
+    if (!isPaid || !customerId || !checkInDate || !checkOutDate || !Array.isArray(rooms) || rooms.length <= 0 || !paymentType || !totalNightsStay || paidTotalPrice <= 0 || bookingTotalPrice <= 0) {
         return res.status(400).json({ message: 'Invalid Inputs' });
     }
 
-    // const connection = await db.getConnection();
+    const connection = await db.getConnection();
 
     try {
         // Start a transaction
-        // await connection.beginTransaction();
+        await connection.beginTransaction();
 
-        // // Insert booking
-        // const [result] = await connection.query(`
-        //     INSERT INTO booking (checkInDate, checkOutDate, totalPrice, paymentType, isPaid, totalPaidPrice, remainBalance,  totalNightsStay, customerId) 
-        //     VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        // `, [formatDateForMySQL(checkInDate), formatDateForMySQL(checkOutDate), bookingTotalPrice, paymentType, isPaid, paidTotalPrice, remainingBalance, totalNightsStay, customerId]);
+        // Insert booking
+        const [result] = await connection.query(`
+            INSERT INTO booking (checkInDate, checkOutDate, totalPrice, paymentType, isPaid, totalPaidPrice, remainBalance,  totalNightsStay, customerId) 
+            VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [formatDateForMySQL(checkInDate), formatDateForMySQL(checkOutDate), bookingTotalPrice, paymentType, isPaid, paidTotalPrice, remainingBalance, totalNightsStay, customerId]);
         
-        // const bookingId = result.insertId;
+        const bookingId = result.insertId;
 
-        // // Insert rooms
-        // for (const r of rooms) {
-        //     await connection.query(`
-        //         INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
-        //         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        //     `, [bookingId, r.id, 1, 1, 1, r.total_quantity, r.total_price, 'room', null]);
-        // }
+        // Insert rooms
+        for (const r of rooms) {
+            await connection.query(`
+                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [bookingId, r.id, 1, 1, 1, r.total_quantity, r.total_price, 'room', null]);
+        }
 
-        // // Insert events
-        // for (const e of events) {
-        //     formatDateForMySQL(e.reserveDate)
-        //     await connection.query(`
-        //         INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
-        //         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        //     `, [bookingId, 1, 1, e.id, 1, e.total_quantity, e.total_price, 'event', formatDateForMySQL(e.reserveDate)]);                                                                                            reserveDate
-        // }
+        // Insert events
+        for (const e of events) {
+            await connection.query(`
+                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [bookingId, 1, 1, e.id, 1, e.total_quantity, e.total_price, 'event', formatDateForMySQL(e.reserveDate)]);                                                                                            
+        }
 
-        // // Insert vehicles
-        // for (const v of vehicle) {
-        //     await connection.query(`
-        //         INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
-        //         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        //     `, [bookingId, 1, v.id, 1, 1, v.total_quantity, v.total_price, 'vehicle', formatDateForMySQL(v.reserveDate)]);
-        // }
+        // Insert vehicles
+        for (const v of vehicle) {
+            await connection.query(`
+                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [bookingId, 1, v.id, 1, 1, v.total_quantity, v.total_price, 'vehicle', null]);
+        }
 
-        // // Insert foods
-        // for (const f of foods) {
-        //     await connection.query(`
-        //         INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
-        //         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        //     `, [bookingId, 1, 1, 1, f.id, f.total_quantity, f.total_price, 'food', formatDateForMySQL(f.reserveDate)]);
-        // }
+        // Insert foods
+        for (const f of foods) {
+            await connection.query(`
+                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [bookingId, 1, 1, 1, f.id, f.total_quantity, f.total_price, 'food', formatDateForMySQL(f.reserveDate)]);
+        }
 
-        // // Commit the transaction
-        // await connection.commit();
+        // Commit the transaction
+        await connection.commit();
 
         const [customerDetails] = await db.query('SELECT email, phone FROM user WHERE id = ?',[customerId]);
         const mobileNo = customerDetails[0].phone;
         const email = customerDetails[0].email;
         const subject_text = 'Thank you for your reservation';
-        const message_text = `Your reservation 1 is confirmed and Enjoy your vacation`;
+        const message_text = `Your reservation ${bookingId} is confirmed and Enjoy your vacation`;
 
         await sendEmail(email,subject_text,message_text);
         await sendSMS(message_text,mobileNo);
@@ -286,13 +285,12 @@ const createNewBooking = async (req, res, next) => {
 
     } catch (err) {
         // Rollback the transaction in case of error
-        // await connection.rollback();
+        await connection.rollback();
         next(err);
-    } 
-    // finally {
-    //     // Release the connection back to the pool
-    //     connection.release();
-    // }
+    }finally {
+        // Release the connection back to the pool
+        connection.release();
+    }
 }
 
 // @desc get all bookings of a customer
