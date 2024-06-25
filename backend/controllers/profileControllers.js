@@ -9,9 +9,9 @@ const getProfile = async (req, res, next) => {
     try {
         let query;
         if(req.user.role === 'Customer') {
-            query = "SELECT id, username, role, firstName, lastName, address, street, city, email,  gender, phone, avatar FROM customer WHERE id = ?";
+            query = "SELECT id, username, role, firstName, lastName, address, street, city, email,  gender, phone, avatar FROM user WHERE id = ?";
         } else {
-            query = "SELECT id, username, role, firstName, lastName, address, street, city, age, email, salary, gender, phone, avatar FROM employee WHERE id = ?";
+            query = "SELECT u.id, u.username, u.role, u.firstName, u.lastName, u.address, u.street, u.city, e.age, u.email, e.salary, u.gender, u.phone, u.avatar FROM user u INNER JOIN employee e ON u.id = e.userId WHERE u.id = ?";
         }
         const [result] = await db.query(query, [req.user.id]);
 
@@ -47,10 +47,10 @@ const updateProfile = async (req, res, next) => {
     // check the username update
     let userProfile;
     if(req.user.role === 'Customer') {
-        const [result] = await db.query("SELECT * FROM customer WHERE id = ?", [req.user.id]);
+        const [result] = await db.query("SELECT * FROM user WHERE id = ?", [req.user.id]);
         userProfile = result[0];
     } else {
-        const [result] = await db.query("SELECT * FROM employee WHERE id = ?", [req.user.id]);
+        const [result] = await db.query("SELECT u.id, u.username, u.role, u.firstName, u.lastName, u.address, u.street, u.city, e.age, u.email, e.salary, u.gender, u.phone, u.avatar FROM user u INNER JOIN employee e ON u.id = e.userId WHERE u.id = ?", [req.user.id]);
         userProfile = result[0];
     }
 
@@ -60,13 +60,13 @@ const updateProfile = async (req, res, next) => {
 
     if(username !== userProfile.username && req.user.role === 'Customer') {
         // trying to update the username
-        const [result] = await db.query("SELECT * FROM customer WHERE username = ?", [username]);
+        const [result] = await db.query("SELECT * FROM user WHERE username = ?", [username]);
         if(result.length > 0) return res.status(400).json({message: 'Username already taken'});  
     }
 
     if(username !== userProfile.username && (req.user.role === 'Employee' || req.user.role === 'Admin')) {
         // trying to update the username
-        const [result] = await db.query("SELECT * FROM employee WHERE username = ?", [username]);
+        const [result] = await db.query("SELECT u.id, u.username, u.role, u.firstName, u.lastName, u.address, u.street, u.city, e.age, u.email, e.salary, u.gender, u.phone, u.avatar FROM user u INNER JOIN employee e ON u.id = e.userId WHERE u.id = ?", [username]);
         if(result.length > 0) return res.status(400).json({message: 'Username already taken'});  
     }
 
@@ -80,13 +80,13 @@ const updateProfile = async (req, res, next) => {
     let params = [];
     if(userProfile.role === 'Customer') {
         if(password) {
-            query = `UPDATE customer SET 
+            query = `UPDATE user SET 
                 username = ?, password = ?, role = ?, firstName = ?, lastName = ?, address = ?, street = ?, city = ?,
                 email = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?
             `;
             params = [username, hashedPassword, role, firstName, lastName, address, street, city, email, gender, avatar, phone, req.user.id];
         } else {
-            query = `UPDATE customer SET 
+            query = `UPDATE user SET 
                 username = ?, role = ?, firstName = ?, lastName = ?, address = ?, street = ?, city = ?,
                 email = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?
             `;
@@ -100,9 +100,9 @@ const updateProfile = async (req, res, next) => {
             `;
             params = [username, hashedPassword, role, firstName, lastName, address, street, city, age, email, gender, avatar, phone, req.user.id];
         } else {
-            query = `UPDATE employee SET 
-                username = ?, role = ?, firstName = ?, lastName = ?, address = ?, street = ?, city = ?,
-                age = ?, email = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?
+            query = `UPDATE e SET 
+                U.username = ?, U.role = ?, U.firstName = ?, U.lastName = ?, U.address = ?, U.street = ?, U.city = ?,
+                e.age = ?, U.email = ?, U.gender = ?, U.avatar = ?, e.phone = ? FROM USER AS U INNER JOIN employee e ON U.id = e.userId U.WHERE id = ?
             `;
             params = [username, role, firstName, lastName, address, street, city, age, email, gender, avatar, phone, req.user.id];
         }
@@ -112,9 +112,9 @@ const updateProfile = async (req, res, next) => {
         await db.query(query, params);
 
         if(req.user.role === 'Customer') {
-            query = "SELECT id, username, role, firstName, lastName, address, street, city, email,  gender, phone, avatar FROM customer WHERE id = ?";
+            query = "SELECT id, username, role, firstName, lastName, address, street, city, email,  gender, phone, avatar FROM user WHERE id = ?";
         } else {
-            query = "SELECT id, username, role, firstName, lastName, address, street, city, age, email, salary, gender, phone, avatar FROM employee WHERE id = ?";
+            query = "SELECT u.id, u.username, u.role, u.firstName, u.lastName, u.address, u.street, u.city, e.age, u.email, e.salary, u.gender, u.phone, u.avatar FROM user u INNER JOIN employee e ON u.id = e.userId WHERE u.id = ?";
         }
         const [result] = await db.query(query, [req.user.id]);
         res.status(200).json({message: 'Profile Updated', profile: result[0]});

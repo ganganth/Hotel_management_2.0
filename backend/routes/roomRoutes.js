@@ -38,7 +38,7 @@ router.route('/bookings/all')
     
 
 router.route('/bookings/:id')
-    .get(roomControllers.getSingleBooking) // get details about single booking 
+    .get(roomControllers.getSingleBookingInSingleCustomer) // get details about single booking 
     .put(roomControllers.updateBookingPaymentStatus) // update booking payment status
 
 router.route('/bookings/customer/:id')

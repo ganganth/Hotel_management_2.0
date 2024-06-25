@@ -153,7 +153,7 @@ const App = () => {
           >
             <Route path="dash" element={<DashLayout />}>
               <Route
-                path="bookings/:bookingId"
+                path="bookings_details/:bookingId"
                 element={<SingleBookingView />}
               />
             </Route>
@@ -425,7 +425,7 @@ const App = () => {
             <Route path="rentals/my" element={<MyRentals />} />
             <Route path="rentals/:rentalId" element={<SingleRental />} />
             <Route path="my-bookings" element={<MyBookings />} />
-            <Route path="bookings/:bookingId" element={<SingleBookingView />}/>
+            <Route path="bookings_details/:bookingId" element={<SingleBookingView />}/>
             <Route path="food-reservation" element={<MenuList />} />
             <Route path="food-reservation/cart" element={<FoodCart />} />
             <Route path="food-reservation/menu/:menuId" element={<Menu />} />
@@ -435,6 +435,7 @@ const App = () => {
             <Route path="events/special" element={<SpecialEvents />} />
             <Route path="events/cart" element={<EventsCart />} />
             <Route path="events/my-orders" element={<EventOrders />} />
+            <Route path="profile" element={<Profile />} />
           </Route>
 
 

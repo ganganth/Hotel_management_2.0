@@ -1,16 +1,19 @@
 import {useState, useEffect, useRef} from 'react';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import useFirestorage from '../../hooks/useFirestorage';
-
+import { useSelector } from 'react-redux';
 import {toast} from 'react-toastify';
-
+import { selectAuthUser } from '../../app/auth/authSlice';
 import {MdEmail, MdPhone, MdLocationOn, MdAddAPhoto, MdDeleteForever} from 'react-icons/md';
 import {FaMale, FaFemale, FaCalendarAlt, FaMoneyCheckAlt} from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 import '../../styles/profile.css';
 
 const Profile = () => {
 
+    const navigate = useNavigate();
+    const user = useSelector(selectAuthUser);
     const avatarInputRef = useRef();
     const axiosPrivate = useAxiosPrivate();
     const {uploadAvatar} = useFirestorage();
@@ -154,11 +157,16 @@ const Profile = () => {
     }
 
     return (
-        <div className='profilePage'>
+        <div className='profilePage' style={user?.role === 'Customer' ? {width:"95%", marginLeft:"2.5%"} : {}}>
 
             <div className='profilePage-left'>
 
                 <h1>Update Profile Information</h1>
+
+                { user?.role === 'Customer' && (
+                    <button className='btn btn-primary' style={{ marginLeft: "90%" }} onClick={() => navigate(-1)}>Go Back</button>
+                )}
+                
                 <hr></hr>
 
                 <div className='profilePage-left-avatar'>

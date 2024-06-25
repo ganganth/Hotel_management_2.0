@@ -80,6 +80,7 @@ const CustomerCart = () => {
             {paymentPopup ? (
                 <Payment 
                     setPaymentPopup = {setPaymentPopup}
+                    setRatePopup = {setRatePopup}
                     roomT = {roomT}
                     foodT = {foodT}
                     vehicleT = {vehicleT}

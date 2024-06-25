@@ -1,23 +1,17 @@
-import {useState, useEffect} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import {useSelector} from 'react-redux';
-import { selectAuthUser } from '../../app/auth/authSlice';
-
-import{Row, Col, ListGroup, Alert, Badge} from 'react-bootstrap';
+import { Table, Spinner } from 'react-bootstrap';
 import moment from 'moment';
-import {toast} from 'react-toastify';
+import { useReactToPrint } from 'react-to-print'
 
 const SingleBookingView = () => {
 
     const [booking, setBooking] = useState({});
     const navigate = useNavigate();
-    const {bookingId} = useParams();
+    const { bookingId } = useParams();
     const axiosPrivate = useAxiosPrivate();
-
-    const authUser = useSelector(selectAuthUser);
-   
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getSingleBooking = async () => {
@@ -26,240 +20,169 @@ const SingleBookingView = () => {
                 setBooking(response.data.booking);
             } catch (err) {
                 console.log(err);
-                navigate('/dash/my-bookings');
+            } finally {
+                setLoading(false);
             }
         }
         getSingleBooking();
     }, [axiosPrivate, bookingId, navigate]);
 
-    const updatePaymentStatus = async (details) => {
-
-        try {
-            console.log(details);
-            const response = await axiosPrivate.put(`/api/rooms/bookings/${booking.id}`, JSON.stringify({amount: +booking.totalPrice}));
-
-            toast.success('Payment status updated');
-
-            setBooking(response.data.booking);
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    const contentToPrint = useRef(null);
+    const handlePrint = useReactToPrint({
+        documentTitle: "Lakraj all order",
+        onBeforePrint: () => console.log("before printing..."),
+        onAfterPrint: () => console.log("after printing..."),
+        removeAfterPrint: true,
+    });
 
     return (
         <>
-            <Row>
-                <Col md={12} className='d-flex justify-content-end'>
-                    <button className='btn btn-primary' onClick={() => navigate(-1)}>Go Back</button>
-                </Col>
-            </Row>
-
+            
+            <button className='btn btn-primary mt-2' style={{ marginLeft: "85%" }} onClick={() => navigate(-1)}>Go Back</button><br />
+            <button className='btn btn-primary mt-2' style={{ marginLeft: "85%" }} onClick={() => {handlePrint(null, () => contentToPrint.current);}}>Print</button>
             <hr></hr>
 
-            <Row>
-                <Col md={12}>
-                    <Alert variant='info'>Booking No.{booking?.id} Details</Alert>
-                </Col>
-            </Row>
+            <div className='d-flex position-fixed' style={{ width: "100%" }}>
+                <div className='col-12' style={{ maxHeight: "600px", overflowY: "scroll" }}>
+                    {loading && (
+                        <div className='d-flex flex-column gap-2 justify-content-center align-items-center'>
+                            <Spinner
+                                as="span"
+                                animation="grow"
+                                size="xl"
+                                role="status"
+                                aria-hidden="true"
 
-            {booking?.id && (
-                <Row>
+                                style={{ marginTop: '250px' }}
+                            />
+                            <small>loading...</small>
+                        </div>
+                    )}
 
-                    <Col md={7}>
-                        <ListGroup>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>#Booking ID</Col>
-                                    <Col md={6}>{booking.id}</Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Booked Date</Col>
-                                    <Col md={6}>{new Date(booking.createdAt).toLocaleString()}</Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Check In Date</Col>
-                                    <Col md={6}><Badge bg='success'>{moment(booking.checkInDate).utc().format('DD MMMM YYYY')}</Badge></Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Check Out Date</Col>
-                                    <Col md={6}><Badge bg='success'>{moment(booking.checkOutDate).utc().format('DD MMMM YYYY')}</Badge></Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Total nights to stay</Col>
-                                    <Col md={6}><Badge bg='primary'>{booking.totalNightsStay}</Badge></Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Total rooms booked</Col>
-                                    <Col md={6}><Badge bg='dark'>{booking.totalRoomsBooked}</Badge></Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Payment Type</Col>
-                                    <Col md={6}><Badge bg={booking.paymentType === 'full' ? 'success' : 'warning'}>{booking.paymentType}</Badge></Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Payment Completion Status</Col>
-                                    <Col md={6}><Badge bg={booking.isPaid === 'yes' ? 'success' : 'warning'}>{booking.isPaid === 'yes' ? 'completed' : 'partially completed'}</Badge></Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Total booking price</Col>
-                                    <Col md={6}>${booking.totalPrice}</Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Total paid amount</Col>
-                                    <Col md={6}>${booking.totalPaidPrice}</Col>
-                                </Row>
-                            </ListGroup.Item>
-                            {booking.paymentType === 'half' && booking.remainBalance > 0 && (
-                                <ListGroup.Item>
-                                    <Row>
-                                        <Col md={6}>Remaining Balance</Col>
-                                        <Col md={6}><Badge bg='warning'>${booking.remainBalance}</Badge></Col>
-                                    </Row>
-                                </ListGroup.Item>
+                    {!loading && (
+                        <div ref={contentToPrint}>
+                            <h3 className='text-center fz-5 fw-900 text-muted' style={{ marginLeft: "0%" }}>Booking No.{bookingId} Details</h3>
+                            {booking.bookedRooms.length > 0 && (
+                                <div className="card" style={{ width: "95%", marginLeft: "2.5%" }} >
+                                    <p className="text-decoration-underline text-center fw-bold fz-4">All room booking details...</p>
+                                    <div className="card-body">
+                                        <Table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Room Name</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {booking.bookedRooms.map(room => (
+                                                    <tr key={room.id}>
+                                                        <td>{room.name}</td>
+                                                        <td>$ {room.paymentType === 'full' ? ((room.booking_price * 0.9) + room.booking_price * 0.05 - room.booking_price * 0.1).toFixed(2) : (room.booking_price + room.booking_price * 0.05 - room.booking_price * 0.1).toFixed(2)}</td>
+                                                        <td>{room.booking_quantity}</td>
+                                                        <td><p>{`This is ${room.adultOccupation} adult Occupation with ${room.bathroomType} bathroom `} <br /> {`and television type ${room.televisionType} ${room.view} view room.`}</p></td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </Table>
+                                    </div>
+                                </div>
                             )}
-                        </ListGroup>
-                    </Col>
+                            {booking.bookedVehicle.length > 0 && (
+                                <div className="card" style={{ width: "95%", marginLeft: "2.5%" }} >
+                                    <p className="text-decoration-underline text-center fw-bold fz-4">All Vehicle booking details...</p>
+                                    <div className="card-body">
+                                        <Table>
+                                            <thead>
+                                                <tr>
+                                                    <th> Vehicle Name</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {booking.bookedVehicle.map(v => (
+                                                    <tr key={v.id}>
+                                                        <td>{v.name}</td>
+                                                        <td>$ {v.booking_price}</td>
+                                                        <td>{v.booking_quantity}</td>
+                                                        <td><p>{`This is ${v.fuelType} fuel type. ${v.isAirConditioned === 'yes' ? 'Air Conditioned' : 'not air Conditioned'} vehicle`} <br /> {`and also  ${v.fuelPolicy} fuel policy and ${v.isDriverFree === 'yes' ? 'with driver' : 'without driver'} vehicle.`}</p></td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </Table>
+                                    </div>
+                                </div>
+                            )}
+                            {booking.bookedFood.length > 0 && (
+                                <div className="card" style={{ width: "95%", marginLeft: "2.5%" }} >
+                                    <p className="text-decoration-underline text-center fw-bold fz-4">All Foods booking details...</p>
+                                    <div className="card-body">
+                                        <Table>
+                                            <thead>
+                                                <tr>
+                                                    <th>meal Name</th>
+                                                    <th>Price</th>
+                                                    <th>Total potions</th>
+                                                    <th>Reserve Date</th>
+                                                    <th>Meal Type</th>
+                                                    <th>Meal Category</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {booking.bookedFood.map(f => (
+                                                    <tr key={f.id}>
+                                                        <td>{f.mealName}</td>
+                                                        <td>$ {f.booking_price}</td>
+                                                        <td>{f.booking_quantity}</td>
+                                                        <td>{moment(f.reserveDate).utc().format('YYYY-MM-DD')}</td>
+                                                        <td>{f.categoryName}</td>
+                                                        <td>{f.name}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </Table>
+                                    </div>
+                                </div>
+                            )}
+                            {booking.bookedEvent.length > 0 && (
+                                <div className="card" style={{ width: "95%", marginLeft: "2.5%" }} >
+                                    <p className="text-decoration-underline text-center fw-bold fz-4">All event booking details...</p>
+                                    <div className="card-body">
+                                        <Table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Event Name</th>
+                                                    <th>Price</th>
+                                                    <th>Total people</th>
+                                                    <th>Reserver Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {booking.bookedEvent.map(e => (
+                                                    <tr key={e.id}>
+                                                        <td>{e.name}</td>
+                                                        <td>$ {e.booking_price}</td>
+                                                        <td>{e.booking_quantity}</td>
+                                                        <td>{moment(e.reserveDate).utc().format('YYYY-MM-DD')}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </Table>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
-                    <Col md={5}>
-                        <ListGroup>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={12}><h4>Room Details</h4></Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Room Type</Col>
-                                    <Col md={6}>{booking.bookedRoomType.name}</Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={6}>Room No's</Col>
-                                    <Col md={6} className='d-flex flex-wrap align-items-center gap-2'>
-                                        {booking.bookedRooms.map(item => (
-                                            <Badge key={item.roomNo} bg='info'>{item.roomNo}</Badge>
-                                        ))}
-                                    </Col>
-                                </Row>
-                            </ListGroup.Item>
-                            <ListGroup.Item>
-                                <Row>
-                                    <Col md={12} className='d-flex align-items-center justify-content-center'><button className='btn btn-primary' onClick={() => navigate(`/dash/rooms/${booking.bookedRoomType.id}`)}>See more about room</button></Col>
-                                </Row>
-                            </ListGroup.Item>
-                        </ListGroup>
+                </div>
 
-                        {/* Employee, Admin can see customer details as well */}
-                        {console.log(booking?.customerDetails)}
-                        {(authUser?.role === 'Admin' || authUser?.role === 'Employee') && (
-                             <ListGroup className='mt-3'>
-                                <ListGroup.Item>
-                                    <Row>
-                                        <Col md={12}><h4>Customer Details</h4></Col>
-                                    </Row>
-                                </ListGroup.Item>
-                                <ListGroup.Item>
-                                    <Row>
-                                        <Col md={6}>ID</Col>
-                                        <Col md={6}><Badge bg='dark'>{booking?.customerDetails?.id}</Badge></Col>
-                                    </Row>
-                                </ListGroup.Item>
-                                <ListGroup.Item>
-                                    <Row>
-                                        <Col md={6}>Name</Col>
-                                        <Col md={6}>{`${booking?.customerDetails?.firstName} ${booking?.customerDetails?.lastName}`}</Col>
-                                    </Row>
-                                </ListGroup.Item>
-                                <ListGroup.Item>
-                                    <Row>
-                                        <Col md={6}>Role</Col>
-                                        <Col md={6} className='d-flex flex-wrap align-items-center gap-2'>
-                                                <Badge bg='info'>{booking?.customerDetails?.role}</Badge>
-                                        </Col>
-                                    </Row>
-                                </ListGroup.Item>
-                                <ListGroup.Item>
-                                    <Row>
-                                    
-                                        <Col md={6}>Phone</Col>
-                                        <Col md={6}>{booking?.customerDetails?.phone}</Col>
-                                    </Row>
-                                </ListGroup.Item>
-                                <ListGroup.Item>
-                                    <Row>
-                                    
-                                        <Col md={6}>Email</Col>
-                                        <Col md={6}>{booking?.customerDetails?.email}</Col>
-                                    </Row>
-                                </ListGroup.Item>
-                            </ListGroup>
-                        )}
+               
+            </div>
 
-                        {booking?.paymentType === 'half' && booking?.remainBalance > 0 && ((authUser?.role === 'Customer' && booking?.customerRole === 'Customer' && +booking?.customerId === +authUser?.id) || ((authUser?.role === 'Employee' || authUser?.role === 'Admin') && booking?.customerRole === 'Employee' && +authUser?.id === +booking?.customerId )) && (
-                            <Row className='mt-3'>
-                                <Col md={12}>
-                                    <ListGroup>
-                                        <ListGroup.Item>
-                                            <Row>
-                                                <Col md={12}><h4>Pay Balance</h4></Col>
-                                            </Row>
-                                        </ListGroup.Item>
-                                        <ListGroup.Item>
-                                            <Row>
-                                                <Col md={12}>
-                                                    <PayPalScriptProvider options={{ "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID}}>
-                                                        <PayPalButtons 
-                                                            style={{ layout: "horizontal" }}
-                                                            createOrder={(data, actions) => {
-                                                                
-                                                                return actions.order.create({
-                                                                    purchase_units: [
-                                                                        {
-                                                                            amount: {
-                                                                                value: booking.remainBalance
-                                                                            },
-                                                                        },
-                                                                    ],
-                                                                });
-                                                            }}
-                                                            onApprove={(data, actions) => {
-                                                                return actions.order.capture().then((details) => {
-                                                                    updatePaymentStatus(details);
-                                                                });
-                                                            }}
-                                                        />
-                                                    </PayPalScriptProvider>
-                                                </Col>
-                                            </Row>
-                                        </ListGroup.Item>
-                                    </ListGroup>
-                                </Col>
-                            </Row>
-                        )}
 
-                    </Col>
-
-                </Row>
-            )}
         </>
     );
 }

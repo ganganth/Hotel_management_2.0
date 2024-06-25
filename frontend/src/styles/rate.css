@@ -1,0 +1,37 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.star-rating {
+    direction: rtl;
+    display: inline-block;
+    font-size: 0;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    color: #ddd;
+    cursor: pointer;
+    font-size: 100px;
+    padding: 0 5px;
+    transition: color 0.3s;
+}
+
+.star-rating input:checked ~ label {
+    color: #ffc700;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffc700;
+}

@@ -27,9 +27,9 @@ const MyBookings = () => {
     }, [axiosPrivate, id, role])
 
     return (
-        <div>
-            <h1>My Bookings</h1>
-
+        <div style={{width:"95%", marginInlineStart:"2.5%"}}>
+            <h1 className='text-center fz-3'>My Bookings</h1>
+            <button className='btn btn-primary' style={{ marginLeft: "90%" }} onClick={() => navigate(-1)}>Go Back</button>
             <hr></hr>
 
             {myBookings.length > 0 ? (
@@ -41,9 +41,10 @@ const MyBookings = () => {
                             <th>Check Out Date</th>
                             <th>Booked Date</th>
                             <th>Payment Status</th>
+                            <th>Total Price</th>
                             <th>Payment Type</th>
                             <th>Remaining Balance</th>
-                            <th>Actions</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,13 +57,14 @@ const MyBookings = () => {
                                 <td>
                                     <div className='d-flex align-items-center justify-content-center'>{booking.isPaid === 'yes' ? (<Badge bg='success'>paid</Badge>) : (<Badge bg='warning'>not completed</Badge>)}</div>
                                 </td>
+                                <td>{booking.totalPrice}</td>
                                 <td>
                                     <div className='d-flex align-items-center justify-content-center'><Badge bg='dark'>{booking.paymentType === 'full' ? 'Full' : 'Half'}</Badge></div>
                                 </td>
                                 <td>{booking.isPaid === 'yes' ? 'No remaining balance' : `$${booking.remainBalance.toFixed(2)}`}</td>
                                 <td>
                                     <div className='d-flex align-items-center justify-content-center'>
-                                        <button className='btn btn-primary btn-sm' onClick={() => navigate(`/dash/bookings/${booking.id}`)} >view more</button>
+                                        <button className='btn btn-primary btn-sm' onClick={() => navigate(`/bookings_details/${booking.id}`)} >view more</button>
                                     </div>
                                 </td>
                                 

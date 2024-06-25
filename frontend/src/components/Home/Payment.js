@@ -84,29 +84,16 @@ const Payment = (props) => {
         }
         return total;
     }
-
-    // const addBooking = async (booking) => {
-    //     try {
-    //         await axiosPrivate.post('/api/rooms/bookings', JSON.stringify(booking));
-    //         toast.success('Booking Successful');
-    //         props.setPaymentPopup(false);
-    //     } catch (err) {
-    //         console.log(err);
-    //         toast.error(err.response.data?.message);
-    //     }
-
-    // }
-
+ 
     const addBooking = async (booking) => {
 
         try {
             await axiosPrivate.post('/api/rooms/bookings', JSON.stringify(booking));
             toast.success('Booking Successful');
             props.setPaymentPopup(false);
-            return true; // Indicate booking success
+            props.setRatePopup(true); 
         } catch (err) {
             console.log(err);
-            return false; // Indicate booking failure
         }
     }
 

@@ -318,7 +318,7 @@ const getAllBookingsOfACustomer = async (req, res, next) => {
     const role = req.query.role === 'Customer' ? 'Customer' : 'Employee';
 
     try {
-        const [result] = await db.query("SELECT * FROM booking WHERE customerId = ? AND customerRole = ?", [customerId, role]);
+        const [result] = await db.query("SELECT * FROM booking WHERE customerId = ?", [customerId]);
 
         if (result.length === 0) return res.status(200).json({ message: 'No Bookings Available', bookings: [] });
 
@@ -334,30 +334,24 @@ const getAllBookingsOfACustomer = async (req, res, next) => {
 // @route GET /api/rooms/bookings/:id 
 // @access protected (Customer, Employee, Admin)
 
-const getSingleBooking = async (req, res, next) => {
+const getSingleBookingInSingleCustomer = async (req, res, next) => {
     const bookingId = req.params.id;
 
     try {
-        const [result] = await db.query("SELECT * FROM booking WHERE id = ?", [bookingId]);
-
+        const [result] = await db.query("SELECT * FROM place_booking WHERE bookingId = ? AND bookingType = ?", [bookingId , 'room']);
+        
         if (result.length <= 0) return res.status(404).json({ message: 'Booking not found' });
-
-        // for the booking find all rooms booked
-        const [rooms] = await db.query("SELECT roomTypeId, roomNo FROM booking_room WHERE bookingId = ?", [bookingId]);
-
-        const [roomTypeDetails] = await db.query("SELECT id, name FROM room_type WHERE id = ?", [rooms[0].roomTypeId]);
+       
+        const [roomDetails] = await db.query("SELECT  b.paymentType, p.quantity  AS booking_quantity, r.*, p.price As booking_price FROM place_booking p INNER JOIN room_type r ON r.id = p.roomId INNER JOIN booking b ON b.id = p.bookingId  WHERE p.bookingId = ? AND p.bookingType =  ?",[bookingId ,'room']);
+        const [vehicleDetails] = await db.query("SELECT  p.quantity  AS booking_quantity, r.*, p.price As booking_price  FROM place_booking p INNER JOIN vehicle r ON r.id = p.vehicleId WHERE p.bookingId = ? AND p.bookingType =  ?",[bookingId ,'vehicle']);
+        const [eventDetails] = await db.query("SELECT  p.quantity  AS booking_quantity, p.reserveDate, r.*, p.price As booking_price FROM place_booking p INNER JOIN event r ON r.id = p.eventId WHERE p.bookingId = ? AND p.bookingType =  ?",[bookingId ,'event']);
+        const [foodDetails] = await db.query("SELECT m.name, mc.categoryName, p.quantity AS booking_quantity, p.reserveDate, r.*, p.price As booking_price FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId INNER JOIN menu m ON m.id = r.menuId INNER JOIN menu_category mc ON mc.id = r.categoryId WHERE p.bookingId = ? AND p.bookingType =  ?",[bookingId ,'food']);
 
         const booking = {
-            ...result[0],
-            bookedRooms: rooms,
-            bookedRoomType: roomTypeDetails[0]
-        }
-
-        if (req.user.role === 'Admin' || req.user.role === 'Employee') {
-            const q1 = result[0].customerRole === 'Customer' ? "SELECT * FROM customer WHERE id=?" : "SELECT * FROM employee WHERE id=? ";
-
-            const [customerData] = await db.query(q1, [result[0].customerId]);
-            booking.customerDetails = customerData[0];
+            bookedRooms: roomDetails,
+            bookedEvent: eventDetails,
+            bookedVehicle: vehicleDetails,
+            bookedFood: foodDetails
         }
 
         res.status(200).json({ message: 'Success', booking });
@@ -472,7 +466,7 @@ module.exports = {
     getAvailableRoomsForBooking,
     createNewBooking,
     getAllBookingsOfACustomer,
-    getSingleBooking,
+    getSingleBookingInSingleCustomer,
     getAllBookings,
     updateBookingPaymentStatus,
 

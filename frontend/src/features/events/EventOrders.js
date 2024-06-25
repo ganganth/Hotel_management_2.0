@@ -20,7 +20,7 @@ const EventOrders = () => {
                 setOrders(response.data.orders);
             } catch (err) {
                 console.log(err);
-            } finally {
+            } finally { 
                 setLoading(false);
             }
         }
