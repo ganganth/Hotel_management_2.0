@@ -106,7 +106,7 @@ const SingleBookingView = () => {
                                                 {booking.bookedVehicle.map(v => (
                                                     <tr key={v.id}>
                                                         <td>{v.name}</td>
-                                                        <td>$ {v.booking_price}</td>
+                                                        <td>$ {(v.booking_price + v.booking_price * 0.05 - v.booking_price * 0.1).toFixed(2)}</td>
                                                         <td>{v.booking_quantity}</td>
                                                         <td><p>{`This is ${v.fuelType} fuel type. ${v.isAirConditioned === 'yes' ? 'Air Conditioned' : 'not air Conditioned'} vehicle`} <br /> {`and also  ${v.fuelPolicy} fuel policy and ${v.isDriverFree === 'yes' ? 'with driver' : 'without driver'} vehicle.`}</p></td>
                                                     </tr>
@@ -135,7 +135,7 @@ const SingleBookingView = () => {
                                                 {booking.bookedFood.map(f => (
                                                     <tr key={f.id}>
                                                         <td>{f.mealName}</td>
-                                                        <td>$ {f.booking_price}</td>
+                                                        <td>$ {(f.booking_price + f.booking_price * 0.05 -f.booking_price * 0.1).toFixed(2)}</td>
                                                         <td>{f.booking_quantity}</td>
                                                         <td>{moment(f.reserveDate).utc().format('YYYY-MM-DD')}</td>
                                                         <td>{f.categoryName}</td>
@@ -164,7 +164,7 @@ const SingleBookingView = () => {
                                                 {booking.bookedEvent.map(e => (
                                                     <tr key={e.id}>
                                                         <td>{e.name}</td>
-                                                        <td>$ {e.booking_price}</td>
+                                                        <td>$ {(e.booking_price + e.booking_price * 0.05 -e.booking_price * 0.1).toFixed(2)}</td>
                                                         <td>{e.booking_quantity}</td>
                                                         <td>{moment(e.reserveDate).utc().format('YYYY-MM-DD')}</td>
                                                     </tr>

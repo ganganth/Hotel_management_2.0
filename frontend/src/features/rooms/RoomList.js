@@ -29,7 +29,7 @@ const RoomList = (props) => {
 
         getAllRoomTypes();
 
-    }, [axiosPrivate, props.roomId]); 
+    }, [axiosPrivate, props.roomId]);
 
     return (
         <div>
@@ -54,17 +54,16 @@ const RoomList = (props) => {
 
             )}
 
-
             <div className='container mt-4'>
                 {rooms.length > 0 && rooms.map(r => (
                     <RoomCard
-                        key={r.id} 
+                        key={r.id}
                         room={r}
                         moreRoomView={moreRoomView}
                         setMoreRoomView={setMoreRoomView}
-                        checkOutDate = {props.checkOutDate}
-                        checkInDate = {props.checkInDate}
-                        total_days = {props.total_days}
+                        checkOutDate={props.checkOutDate}
+                        checkInDate={props.checkInDate}
+                        total_days={props.total_days}
                     />
                 ))}
             </div>

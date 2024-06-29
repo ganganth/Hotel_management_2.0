@@ -6,6 +6,7 @@ import { removeRoomItemFromCart, removeFoodItemFromCart, removeEventItemFromCart
 import { toast } from 'react-toastify';
 import Payment from './Payment';
 import Reviews from './Reviews';
+import Ebill from './Ebill';
 
 const CustomerCart = () => {
 
@@ -27,6 +28,8 @@ const CustomerCart = () => {
 
     const [paymentPopup, setPaymentPopup] = useState(false);
     const [ratePopup, setRatePopup] = useState(false);
+    const [billData, SetBillData] = useState([]);
+    const [billPrint, setBillPrint] = useState(false)
 
     useEffect(() => {
         const roomsOrder = items.filter(i => i.reservationType === 'rooms');
@@ -76,26 +79,36 @@ const CustomerCart = () => {
     }
 
     return (
-        <div style={(paymentPopup || ratePopup) ? { backgroundColor:"rgba(0, 0, 0, 0.7)", height:"900px" } : {}}>
+        <div style={(paymentPopup || ratePopup) ? { backgroundColor: "rgba(0, 0, 0, 0.7)", height: "900px" } : {}}>
             {paymentPopup ? (
-                <Payment 
-                    setPaymentPopup = {setPaymentPopup}
-                    setRatePopup = {setRatePopup}
-                    roomT = {roomT}
-                    foodT = {foodT}
-                    vehicleT = {vehicleT}
-                    eventT = {eventT}
-                    roomsOrder = {roomsOrder}
-                    foodsOrder = {foodsOrder}
-                    eventsOrder = {eventsOrder}
-                    vehiclesOrder = {vehiclesOrder}
-                    total = {total}
-                    discount = {discount}
-                    tax = {tax}
+                <Payment
+                    setPaymentPopup={setPaymentPopup}
+                    setRatePopup={setRatePopup}
+                    roomT={roomT}
+                    foodT={foodT}
+                    vehicleT={vehicleT}
+                    eventT={eventT}
+                    roomsOrder={roomsOrder}
+                    foodsOrder={foodsOrder}
+                    eventsOrder={eventsOrder}
+                    vehiclesOrder={vehiclesOrder}
+                    total={total}
+                    discount={discount}
+                    tax={tax}
+                    SetBillData={SetBillData}
+                    setBillPrint={setBillPrint}
+                />
+            ) : billPrint ? (
+                <Ebill
+                    billData={billData}
+                    discount={discount}
+                    tax={tax}
+                    billPrint={billPrint}
+                    setBillPrint={setBillPrint}
                 />
             ) : ratePopup ? (
                 <Reviews
-                    setRatePopup = {setRatePopup}
+                    setRatePopup={setRatePopup}
                 />
             ) : (
                 <div className="container-fluid">
@@ -180,7 +193,7 @@ const CustomerCart = () => {
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <button type="button" className="btn btn-primary" onClick={() => setPaymentPopup(true) }>Pay Now</button>
+                                    <button type="button" className="btn btn-primary" onClick={() => setPaymentPopup(true)}>Pay Now</button>
                                 </div>
                             </div>
                         </div>

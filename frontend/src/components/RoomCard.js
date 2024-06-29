@@ -111,9 +111,6 @@ const RoomCard = (props) => {
                                             <h6 className="text-striked text-muted">${props.room.totalPrice}</h6>
                                             <h6 className="text-success">{props.room.fullPaymentDiscount}% off</h6>
                                         </div>
-                                        {(role === 'Employee' || role === 'Admin') && (
-                                            <button className="btn btn-primary" onClick={() => navigate(`/dash/rooms/${props.room.id}`)}>View More</button>
-                                        )}
                                         {(role === 'Customer') && (
                                             <button className="btn btn-primary" onClick={() => roomMoreViewFunc(props.room.id)}>View More</button>
                                         )}

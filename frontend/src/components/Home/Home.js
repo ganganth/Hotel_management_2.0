@@ -9,7 +9,7 @@ const Home = () => {
       <div className="home-header">
         <Header style={{ position: "absolute" }}></Header>
         <div className="shape">
-          <img src="/img/logo.jpg" alt="" />
+          <img src="/img/logo1.jpg" alt="" />
         </div>
         <h1>Welcome To</h1> 
         <h2>LakRaj</h2>

@@ -1,5 +1,4 @@
-// import { useSelector } from 'react-redux';
-// import { selectAuthUser } from '../app/auth/authSlice';
+
 // import { useNavigate } from 'react-router-dom';
 import { Carousel, Badge } from 'react-bootstrap';
 import { MdInfo, MdCheckCircle, MdCancel, MdDoubleArrow } from 'react-icons/md';
@@ -9,13 +8,13 @@ import { FaCarSide, FaGasPump, FaMapMarkerAlt, FaCheck } from 'react-icons/fa';
 const VehicleCard = (props) => {
 
     // const navigate = useNavigate();
-    // const user = useSelector(selectAuthUser);
+    
 
     const calculatePriceWithDiscount = (price, discount) => {
         const d = (+price / 100) * +discount;
         return (+price - d).toFixed(2);
     }
-   
+  
     return (
 
         <div className="p-4 shadow mb-4 w-100 position-relative" >
@@ -80,7 +79,10 @@ const VehicleCard = (props) => {
                             <Badge bg='dark'>{props.vehicle.type.charAt(0).toUpperCase() + props.vehicle.type.slice(1)}</Badge>
 
                         </p>
-                        <button className='btn btn-primary rounded mx-5 d-flex align-items-center justify-content-center gap-2' style={{ fontWeight: 500, width: '200px', fontSize: '18px' }} onClick={() => props.handleVehiclePopup(props.vehicle)} >Rent Now <MdDoubleArrow fontSize={25} /></button>
+                        {props.role === 'Customer' && (
+                            <button className='btn btn-primary rounded mx-5 d-flex align-items-center justify-content-center gap-2' style={{ fontWeight: 500, width: '200px', fontSize: '18px' }} onClick={() => props.handleVehiclePopup(props.vehicle)} >Rent Now <MdDoubleArrow fontSize={25} /></button>
+                        )}
+
                     </div>
 
                 </div>

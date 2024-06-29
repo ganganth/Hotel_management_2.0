@@ -1,92 +1,270 @@
-import {useState, useEffect, Suspense} from 'react';
-import {useSelector} from 'react-redux';
-import {selectAuthUser} from '../../app/auth/authSlice';
-import moment from 'moment';
-
+import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { FaPrint } from "react-icons/fa";
 import '../../styles/welcome.css';
-import PopularFoodCategory from '../../components/charts/PopularFoodCategory';
-import BookingsMonthlyReport from '../../components/charts/BookingsMonthlyReport';
-import DashboardCard from '../../components/DashboardCard';
+import { MdFilterList } from "react-icons/md";
+import { useReactToPrint } from 'react-to-print'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
 const Welcome = () => {
 
-    const user = useSelector(selectAuthUser);
+    const [filter, setFilter] = useState(false);
 
-    const [timestamp, setTimestamp] = useState(moment().format('LTS'));
-
-    useEffect(() => {
-        const timerId = setInterval(() => {
-            setTimestamp(moment().format('LTS'));
-        }, 1000)
-
-        return () => clearInterval(timerId);
-    }, []);
+    const contentToPrint = useRef(null);
+    const contentToPrint1 = useRef(null);
+    const contentToPrint2 = useRef(null);
+    const handlePrint = useReactToPrint({
+        documentTitle: "Lakraj all order",
+        onBeforePrint: () => console.log("before printing..."),
+        onAfterPrint: () => console.log("after printing..."),
+        removeAfterPrint: true,
+    });
 
     return (
-        <div>
-            <div className="dashboard-welcome-box">
-                <div className='contact_left'>
-                    <h1>Welcome, <span>{user.username}</span></h1>
-                    <h6>{moment().format('MMMM Do YYYY')} , {moment().format('dddd')}</h6>
-                   
-                    <div className='welcome-box-img'>
-                        <img src='/img/welcome.png' alt='welcome' />
+        <div className="container d-flex">
+
+            <div className='col-8'>
+
+                <div className="row">
+                    <div className="col-sm-4">
+                        <div className="card" style={{ height: "120px" }}>
+                            <div className="card-body">
+                                <p className="text-center">Today total booking:</p>
+                                <p className="text-center">12</p>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-4">
+                        <div className="card" style={{ height: "120px" }}>
+                            <div className="card-body">
+                                <p className="text-center">Today total income:</p>
+                                <p className="text-center">$ 45</p>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-sm-4">
+                        <div className="card" style={{ height: "120px" }}>
+                            <div className="card-body">
+                                <p className="text-center">Today total number of customer:</p>
+                                <p className="text-center">4</p>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
-               
-                <div className='contact_us'>
-                     <p>Email : lakraj@gmail.com</p>
-                    <p>Contact us : 076-4567634</p>
-                    <p>Fax : 041-235676</p>
-                    <p className='welcome-box-current-time'>{timestamp}</p>
+
+                <div className='row mt-3 d-flex'>
+                    <select className="form-select col-3 ml-2 align-items-start" aria-label="Default select example" style={{ width: "20%" }}>
+                        <option selected>Today</option>
+                        <option value="1">Last 7 days.</option>
+                        <option value="2">Last 30 days</option>
+                        <option value="3">All</option>
+                    </select>
+                    <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "55%" }} onClick={() => { handlePrint(null, () => contentToPrint.current); }}><FaPrint /></button>
+                    <button type="button" className="btn btn-primary col-2 align-items-end" style={{ marginLeft: "5%" }} onClick={() => setFilter(!filter)}> <MdFilterList /> Filter</button>
+                </div>
+                <div ref={contentToPrint}>
+                    <div className='row mt-3'>
+                        <p className='text-center text-mute fz-4 fw-bold'>Booking Details</p>
+                    </div>
+
+                    <div className='row mt-3' style={{ maxHeight: "600px", overflowY: "auto" }}>
+                        <table className="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Order Id</th>
+                                    <th scope="col">Order Date</th>
+                                    <th scope="col">Order State</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>Mark</td>
+                                    <td>Otto</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>Jacob</td>
+                                    <td>Thornton</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">3</th>
+                                    <td colSpan="2">Larry the Bird</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>Mark</td>
+                                    <td>Otto</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>Jacob</td>
+                                    <td>Thornton</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">3</th>
+                                    <td colSpan="2">Larry the Bird</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>Mark</td>
+                                    <td>Otto</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>Jacob</td>
+                                    <td>Thornton</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">3</th>
+                                    <td colSpan="2">Larry the Bird</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>Mark</td>
+                                    <td>Otto</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>Jacob</td>
+                                    <td>Thornton</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">3</th>
+                                    <td colSpan="2">Larry the Bird</td>
+                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+            <div className='col-4 ml-5 gap-2'>
 
-            {user && user.role === 'Customer' && (
-                <div className='my-5'>
-                    <div className='d-flex flex-wrap justify-content-between'>
-                        <DashboardCard
-                            title="Book your room today"
-                            text="Booking your room today will ensure your accommodation is secured for your desired dates."
-                            url="/images/dash_room.jpg"
-                            link="/dash/rooms"
-                        />
-                        <DashboardCard
-                            title="Rent A vehicle!"
-                            text="Renting a vehicle will provide you with the means to conveniently travel and explore your destination."
-                            url="/images/dash_rental.jpg"
-                            link="/dash/vehicle-rental"
-                        />
-                        <DashboardCard
-                            title="Order some foods!"
-                            text="Ordering some food will satisfy your hunger and provide you with a delicious meal delivered right to your doorstep. "
-                            url="/images/dash_food.jpg"
-                            link="/dash/food-reservation"
-                        />
-                        <DashboardCard
-                            title="Join some events!"
-                            text="Joining some events will allow you to immerse yourself in enriching experiences, connect with like-minded individuals, and create lasting memories."
-                            url="/images/dash_event.jpg"
-                            link="/dash/events"
-                        />
+                {filter ? (
+                    <div style={{ marginLeft: "10%" }}>
+                        <div className='row'> <p className='text-center fz-4 fw-bold'>Filter Orders</p></div>
+                        <div className='row d-flex mt-5'>
+                            <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }}>Payment Status :</label>
+                            <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }}>
+                                <option value="1">full</option>
+                                <option value="2">half</option>
+                            </select>
+                        </div>
+                        <div className='row d-flex mt-5'>
+                            <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }}>Customer Type :</label>
+                            <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }}>
+                                <option value="1">Foreign</option>
+                                <option value="2">Local</option>
+                            </select>
+                        </div>
+                        <div className='row d-flex mt-5'>
+                            <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }}>Month :</label>
+                            <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }}>
+                                <option value="1">January</option>
+                                <option value="2">February</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                        </div>
+                        <div className='row d-flex mt-5'>
+                            <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }}>Reservation Type :</label>
+                            <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }}>
+                                <option value="1">All</option>
+                                <option value="2">Rooms & event</option>
+                                <option value="3">Rooms & foods</option>
+                                <option value="4">Rooms & vehicle</option>
+                                <option value="5">Rooms & event & foods</option>
+                                <option value="6">Rooms & event & vehicle</option>
+                                <option value="7">Rooms & foods & vehicle</option>
+                            </select>
+                        </div>
+                        <div className='row mt-5'>
+                            <div class="d-grid col-6 mx-auto">
+                                <button className="btn btn-primary" type="button">Search</button>
+                            </div>
+                        </div>
+
                     </div>
-                </div>
-            )}
+                ) : (
+                    <div style={{ marginLeft: "10%" }}>
+                        <div className='row' style={{ height: "50%" }}>
 
-            {/* Reports Charts  */}
-            {user && (user.role === 'Admin' || user.role === 'Employee') && (
-                <>
-                    <Suspense fallback={<p>Loading...</p>}>
-                        <PopularFoodCategory />
-                    </Suspense>
-                    <Suspense fallback={<p>Loading...</p>}>
-                        <BookingsMonthlyReport />
-                    </Suspense>
-                </>
-            )}
-            
-            
-        </div>
+                            <div className='d-flex'>
+                                <label htmlFor="exampleInputEmail1" className="label " style={{ width: "20$" }}>Top five foods :</label>
+                                <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "25%" }} onClick={() => { handlePrint(null, () => contentToPrint1.current); }}><FaPrint /></button>
+                                <select className="form-select c ml-2 " aria-label="Default select example" style={{ width: "40%", marginLeft: "10%" }}>
+                                    <option selected>Today</option>
+                                    <option value="1">Last 7 days.</option>
+                                    <option value="2">Last 30 days</option>
+                                    <option value="3">All</option>
+                                </select>
+                            </div >
+                            <div ref={contentToPrint1}>
+                                <h1>chart 1</h1>
+                            </div>
+
+                        </div>
+                        <div className='row' style={{ height: "50%" }}>
+                            <div className='d-flex'>
+                                <label htmlFor="exampleInputEmail1" className="label " style={{ width: "20$" }}>Top five events :</label>
+                                <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "25%" }} onClick={() => { handlePrint(null, () => contentToPrint2.current); }}><FaPrint /></button>
+                                <select className="form-select c ml-2 " aria-label="Default select example" style={{ width: "40%", marginLeft: "10%" }}>
+                                    <option selected>Today</option>
+                                    <option value="1">Last 7 days.</option>
+                                    <option value="2">Last 30 days</option>
+                                    <option value="3">All</option>
+                                </select>
+                            </div>
+                            <div ref={contentToPrint2}>
+
+                                <div className='anl-pie-chart-container'>
+                                    <ResponsiveContainer>
+                                        <PieChart>
+                                            {/* <Pie data={data} innerRadius={60} outerRadius={100} fill='#ccc' paddingAngle={5} dataKey='value' label={{ fill: 'black', fontSize: 13 }} onClick={handlePieClick}>
+                                                {data.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip content={<CustomTooltip />} /> */}
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                )
+                }
+
+            </div >
+
+        </div >
     );
 }
 

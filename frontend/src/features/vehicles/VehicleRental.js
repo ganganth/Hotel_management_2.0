@@ -7,6 +7,7 @@ import VehicleCard from '../../components/VehicleCard';
 import VehiclePopUp from './VehiclePopUp';
 import { Row, Col, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import { selectAuthUser } from '../../app/auth/authSlice';
 
 const VehicleRental = (props) => {
 
@@ -20,7 +21,8 @@ const VehicleRental = (props) => {
     const { items } = useSelector(state => state.orderCart);
     const [vehiclesPD, setVehiclesPD] = useState([]);
     const pickupCharge =100;
-
+    const role = useSelector(selectAuthUser);
+   console.log("dcbdfvchjd",role)
     useEffect(() => {
         const getAllVehicleData = async () => {
             try {
@@ -112,7 +114,7 @@ const VehicleRental = (props) => {
 
                         <Row className='my-5'>
                             <Col md={12}>
-                                {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} isEditable={false} isRentalBtnVisible={true} handleVehiclePopup={handleVehiclePopup} />)
+                                {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} isEditable={false} isRentalBtnVisible={true} handleVehiclePopup={handleVehiclePopup} role={role.role} />)
                                 }
                             </Col >
 

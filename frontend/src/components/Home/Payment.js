@@ -16,6 +16,7 @@ const Payment = (props) => {
     const [filteredFoodsOrder, setFilteredFoodsOrder] = useState([]);
     const [filteredEventsOrder, setFilteredEventsOrder] = useState([]);
     const [filteredVehiclesOrder, setFilteredVehiclesOrder] = useState([]);
+    
 
     useEffect(() => {
         if (props.roomsOrder.length > 0) {
@@ -92,6 +93,7 @@ const Payment = (props) => {
             toast.success('Booking Successful');
             props.setPaymentPopup(false);
             props.setRatePopup(true); 
+            props.setBillPrint(true);
         } catch (err) {
             console.log(err);
         }
@@ -116,7 +118,7 @@ const Payment = (props) => {
             vehicle: filteredVehiclesOrder,
             foods: filteredFoodsOrder
         };
-
+        props.SetBillData(booking);
         const bookingSuccess = await addBooking(booking);
         if (!bookingSuccess) {
             throw new Error('Booking failed');

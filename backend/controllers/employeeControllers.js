@@ -10,7 +10,7 @@ const getAllEmployees = async (req, res, next) => {
 
     try {
         
-        const [result] = await db.query("SELECT id, username, role, firstName, lastName, address, street, city, age, email, salary, phone, gender, avatar FROM employee");
+        const [result] = await db.query("SELECT u.id, u.username, u.role, u.firstName, u.lastName, u.address, u.street, u.city, e.age, u.email, e.salary, u.phone, u.gender, u.avatar FROM user u INNER JOIN employee e ON e.userId = u.id WHERE u.role = ?",['Employee']);
 
         res.status(200).json({message: 'Success', employees: result})
     } catch (err) {
@@ -33,7 +33,7 @@ const createNewEmployee = async (req, res, next) => {
 
     try {
         // check already existing user with the given username
-        const [duplicate] = await db.query("SELECT * FROM employee WHERE username = ?", [username]);
+        const [duplicate] = await db.query("SELECT * FROM user WHERE username = ?", [username]);
 
         if(duplicate.length > 0) {
             // status 409 - stands for conflict
@@ -52,11 +52,15 @@ const createNewEmployee = async (req, res, next) => {
         }
 
         // insert new employee record
-        await db.query(
-            `INSERT INTO employee (username, password, role, firstName, lastName, address, street, city, age, email, salary, gender, avatar, phone)
+        const [user] = await db.query(
+            `INSERT INTO user (username, password, role, firstName, lastName, address, street, city, email, gender, avatar, phone)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-             [username, hashedPassword, role, firstName, lastName, address, street, city, +age, email, +salary, gender, picUrl, phone]
+             [username, hashedPassword, role, firstName, lastName, address, street, city, email, gender, picUrl, phone]
         )
+
+        const userId = user.insertId;
+
+        await db.query(`INSERT INTO employee (userId, age, salary) VALUES (?, ?, ?)`,[userId, +age, +salary])
 
         res.status(201).json({message: 'Employee Added'});
     } catch (err) {
@@ -83,7 +87,7 @@ const updateEmployee = async (req, res, next) => {
 
     try {
         // find the existing user
-        const [result] = await db.query("SELECT * FROM employee WHERE id = ?", [+id]);
+        const [result] = await db.query("SELECT * FROM user WHERE id = ?", [+id]);
         const employee = result[0];
 
         if(!employee) {
@@ -92,7 +96,7 @@ const updateEmployee = async (req, res, next) => {
 
         if(employee.username !== username) {
             // employee username needs to be updated, so check wether there is a user already exist with the new username
-            const [duplicate] = await db.query("SELECT * FROM employee WHERE username = ?", [username]);
+            const [duplicate] = await db.query("SELECT * FROM user WHERE username = ?", [username]);
 
             if(duplicate.length > 0) {
                 // username already taken, cannot update
@@ -106,19 +110,19 @@ const updateEmployee = async (req, res, next) => {
             // update the password also 
             // hash the password
             const hashedPassword = await bcrypt.hash(password, 10);
-            query = `UPDATE employee SET 
-                username = ?, password = ?, role = ?, firstName = ?, lastName = ?, address = ?, street = ?, city = ?,
-                age = ?, email = ?, salary = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?
+            query = `UPDATE user SET 
+                username = ?, password = ?, role = ?, firstName = ?, lastName = ?, address = ?, street = ?, city = ?
+                , email = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?
             `;
             
-            params = [username, hashedPassword, role, firstName, lastName, address, street, city, +age, email, +salary, gender, avatar, phone, id];
+            params = [username, hashedPassword, role, firstName, lastName, address, street, city, email, gender, avatar, phone, id];
 
         } else {
-            query = `UPDATE employee SET 
+            query = `UPDATE user SET 
                 username = ?, role = ?, firstName = ?, lastName = ?, address = ?, street = ?, city = ?,
-                age = ?, email = ?, salary = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?
+                email = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?
             `;
-            params = [username, role, firstName, lastName, address, street, city, +age, email, +salary, gender, avatar, phone, id];
+            params = [username, role, firstName, lastName, address, street, city, email, gender, avatar, phone, id];
         }
 
         // update employee
@@ -140,7 +144,7 @@ const getEmployee = async (req, res, next) => {
     const {id} = req.params;
 
     try {
-        const [result] = await db.query("SELECT id, username, role, firstName, lastName, address, street, city, age, email, salary, gender, phone, avatar FROM employee WHERE id = ? ", [id]);
+        const [result] = await db.query("SELECT u.id, u.username, u.role, u.firstName, u.lastName, u.address, u.street, u.city, e.age, u.email, e.salary, u.phone, u.gender, u.avatar FROM user u INNER JOIN employee e ON e.userId = u.id WHERE u.role = ? AND id = ?",['Employee',id]);
 
         if(result.length === 0) {
             return res.status(404).json({message: 'Employee not found'});
@@ -169,12 +173,13 @@ const deleteEmployee = async (req, res) => {
     try {
 
         // find the employee
-        const [result] = await db.query("SELECT * FROM employee WHERE id = ? ", [id]);
+        const [result] = await db.query("SELECT * FROM user WHERE id = ? ", [id]);
         
         if(result.length === 0) return res.status(404).json({message: 'Employee not found'});
 
         // delete the employee
-        await db.query("DELETE FROM employee WHERE id = ? ", [id]);
+        await db.query("DELETE FROM user WHERE id = ? ", [id]);
+        await db.query("DELETE FROM employee WHERE userId = ? ", [id]);
 
         res.status(200).json({message: 'Employee Removed'});
         

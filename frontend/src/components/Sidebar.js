@@ -15,13 +15,13 @@ const Sidebar = () => {
     return (
         <aside className="dash-layout-sidebar">
 
-            <button className='logout-btn' onClick={() => dispatch(logoutAuthUser())}>
+            <button className='logout-btn' style={{backgroundColor:"#232955"}} onClick={() => dispatch(logoutAuthUser())}>
                 <MdOutlinePowerSettingsNew />
                 Logout
             </button>
 
-            <div className='sidebar-logo'>
-                <img src='/img/logo.jpg' alt='logo' style={{borderRadius:50}}></img>
+            <div className='sidebar-logo' >
+                <img src='/img/logo.jpg' alt='logo' style={{borderRadius:50,height:"100px",width:"100px"}}></img>
             </div>
 
             <nav className='sidebar-nav'>
@@ -33,14 +33,14 @@ const Sidebar = () => {
                         </Link>
                     </li>
 
-                    <li>
+                    {/* <li>
                         <Link to='/dash/food-reservation' className={`${currentPath === '/dash/food-reservation' ? 'bg-white text-dark' : ''}`}>
                             <MdFastfood />
                             Foods Reservation
                         </Link>
-                    </li>
+                    </li> */}
 
-                    {(role === 'Customer'|| role === 'Admin') && (
+                    {/* {(role === 'Customer'|| role === 'Admin') && (
                         <>
                             <li>
                                 <Link to='/dash/rooms' className={`${currentPath === '/dash/rooms' ? 'bg-white text-dark' : ''}`}>
@@ -49,21 +49,21 @@ const Sidebar = () => {
                                 </Link>
                             </li>
                         </>
-                    )}
+                    )} */}
 
-                    <li>
+                    {/* <li>
                         <Link to='/dash/vehicle-rental' className={`${currentPath === '/dash/vehicle-rental' ? 'bg-white text-dark' : ''}`}>
                             <MdCarRental fontSize={20} />
                             Vehicle Rental
                         </Link>
-                    </li>
+                    </li> */}
 
-                    <li>
+                    {/* <li>
                         <Link to='/dash/events' className={`${currentPath === '/dash/events' ? 'bg-white text-dark' : ''}`}>
                             <MdKitesurfing fontSize={20} />
                             Events
                         </Link>
-                    </li>
+                    </li> */}
 
                     {/* <li>
                         <Link to='/dash/my-bookings' className={`${currentPath === '/dash/my-bookings' ? 'bg-white text-dark' : ''}`}>
@@ -79,7 +79,7 @@ const Sidebar = () => {
                         </Link>
                     </li> */}
 
-                    {(role === 'Customer'|| role === 'Admin') && (
+                    {/* {(role === 'Customer'|| role === 'Admin') && (
 
                         <>
                             <li>
@@ -111,7 +111,7 @@ const Sidebar = () => {
                                 </Link>
                             </li>
                         </>
-                    )}
+                    )} */}
 
                     
                     
@@ -149,6 +149,13 @@ const Sidebar = () => {
                                     Customer Management
                                 </Link>
                             </li>
+
+                            <li>
+                                <Link to='' className={`${currentPath === '/dash/my-bookings' ? 'bg-white text-dark' : ''}`}>
+                                    <MdBookmark />
+                                    Order Management
+                                </Link>
+                            </li>
                         </>
                     )}
 
@@ -164,7 +171,6 @@ const Sidebar = () => {
                         </>
                     )}
 
-                    
                     <li>
                         <Link to='/dash/profile' className={`${currentPath === '/dash/profile' ? 'bg-white text-dark' : ''}`}>
                             <MdAccountCircle />
