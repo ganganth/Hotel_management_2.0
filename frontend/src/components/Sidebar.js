@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from 'react-redux';
 import {logoutAuthUser, selectAuthUser} from '../app/auth/authSlice';
 import {Link} from 'react-router-dom';
-import {MdStarBorderPurple500, MdDashboard, MdAccountCircle, MdOutlinePowerSettingsNew, MdSupervisedUserCircle, MdRoomPreferences, MdBedroomParent, MdOutlineFoodBank, MdBookmark, MdDirectionsCarFilled, MdCarRental, MdOutlineVpnKey, MdFastfood, MdEvent, MdKitesurfing, MdSetMeal } from "react-icons/md";
+import { MdDashboard, MdAccountCircle, MdOutlinePowerSettingsNew, MdSupervisedUserCircle, MdRoomPreferences, MdOutlineFoodBank, MdBookmark, MdDirectionsCarFilled, MdEvent } from "react-icons/md";
 import {FaUsers} from 'react-icons/fa';
 
 
@@ -151,7 +151,7 @@ const Sidebar = () => {
                             </li>
 
                             <li>
-                                <Link to='' className={`${currentPath === '/dash/my-bookings' ? 'bg-white text-dark' : ''}`}>
+                                <Link to='/dash/order-management' className={`${currentPath === '/dash/order-management' ? 'bg-white text-dark' : ''}`}>
                                     <MdBookmark />
                                     Order Management
                                 </Link>

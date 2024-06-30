@@ -61,6 +61,7 @@ import Booking from "./components/Booking";
 import CustomerCart from "./components/Home/CustomerCart";
 import MyReservation from "./components/MyReservation";
 import CustomerHeader from "./components/Home/CustomerHeader";
+import OrderManagement from "./components/OrderManagement";
 
 const App = () => {
   return (
@@ -153,7 +154,7 @@ const App = () => {
           >
             <Route path="dash" element={<DashLayout />}>
               <Route
-                path="bookings_details/:bookingId"
+                path="order-management/bookings_details/:bookingId"
                 element={<SingleBookingView />}
               />
             </Route>
@@ -306,6 +307,15 @@ const App = () => {
               <Route
                 path="employee/vehicle-management/rentals"
                 element={<AllRentals />}
+              />
+            </Route>
+          </Route>
+
+          <Route element={<RequireAuth allowedRoles={["Employee", "Admin"]} />}>
+            <Route path="dash" element={<DashLayout />}>
+              <Route
+                path="order-management"
+                element={<OrderManagement />}
               />
             </Route>
           </Route>

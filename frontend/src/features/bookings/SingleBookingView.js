@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-import { Table, Spinner } from 'react-bootstrap';
+import { Table, Spinner, Row, Col, ListGroup } from 'react-bootstrap';
 import moment from 'moment';
 import { useReactToPrint } from 'react-to-print'
+import { FaPrint } from "react-icons/fa";
+import { useSelector } from 'react-redux';
+import { selectAuthUser } from '../../app/auth/authSlice';
 
 const SingleBookingView = () => {
 
@@ -12,6 +15,7 @@ const SingleBookingView = () => {
     const { bookingId } = useParams();
     const axiosPrivate = useAxiosPrivate();
     const [loading, setLoading] = useState(true);
+    const authUser = useSelector(selectAuthUser);
 
     useEffect(() => {
         const getSingleBooking = async () => {
@@ -37,13 +41,13 @@ const SingleBookingView = () => {
 
     return (
         <>
-            
-            <button className='btn btn-primary mt-2' style={{ marginLeft: "85%" }} onClick={() => navigate(-1)}>Go Back</button><br />
-            <button className='btn btn-primary mt-2' style={{ marginLeft: "85%" }} onClick={() => {handlePrint(null, () => contentToPrint.current);}}>Print</button>
+
+            <button className='btn btn-primary mt-2' style={{ marginLeft: "85%" }} onClick={() => navigate(-1)}>Go Back</button>
+            <button className='btn btn-primary mt-2 text-muted gap-2' style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "1%" }} onClick={() => { handlePrint(null, () => contentToPrint.current); }}><FaPrint /></button>
             <hr></hr>
 
-            <div className='d-flex position-fixed' style={{ width: "100%" }}>
-                <div className='col-12' style={{ maxHeight: "600px", overflowY: "scroll" }}>
+            <div className='container-fluid'>
+                <div style={{ maxHeight: "600px", overflowY: "auto" }}>
                     {loading && (
                         <div className='d-flex flex-column gap-2 justify-content-center align-items-center'>
                             <Spinner
@@ -61,9 +65,9 @@ const SingleBookingView = () => {
 
                     {!loading && (
                         <div ref={contentToPrint}>
-                            <h3 className='text-center fz-5 fw-900 text-muted' style={{ marginLeft: "0%" }}>Booking No.{bookingId} Details</h3>
+                            <h3 className='text-center fs-4 fw-bold text-muted' style={{ marginLeft: "0%" }}>Booking No.{bookingId} Details</h3>
                             {booking.bookedRooms.length > 0 && (
-                                <div className="card" style={{ width: "95%", marginLeft: "2.5%" }} >
+                                <div className="card mt-3" style={{ width: "95%", marginLeft: "2.5%" }} >
                                     <p className="text-decoration-underline text-center fw-bold fz-4">All room booking details...</p>
                                     <div className="card-body">
                                         <Table>
@@ -90,7 +94,7 @@ const SingleBookingView = () => {
                                 </div>
                             )}
                             {booking.bookedVehicle.length > 0 && (
-                                <div className="card" style={{ width: "95%", marginLeft: "2.5%" }} >
+                                <div className="card mt-3" style={{ width: "95%", marginLeft: "2.5%" }} >
                                     <p className="text-decoration-underline text-center fw-bold fz-4">All Vehicle booking details...</p>
                                     <div className="card-body">
                                         <Table>
@@ -117,7 +121,7 @@ const SingleBookingView = () => {
                                 </div>
                             )}
                             {booking.bookedFood.length > 0 && (
-                                <div className="card" style={{ width: "95%", marginLeft: "2.5%" }} >
+                                <div className="card mt-3" style={{ width: "95%", marginLeft: "2.5%" }} >
                                     <p className="text-decoration-underline text-center fw-bold fz-4">All Foods booking details...</p>
                                     <div className="card-body">
                                         <Table>
@@ -135,7 +139,7 @@ const SingleBookingView = () => {
                                                 {booking.bookedFood.map(f => (
                                                     <tr key={f.id}>
                                                         <td>{f.mealName}</td>
-                                                        <td>$ {(f.booking_price + f.booking_price * 0.05 -f.booking_price * 0.1).toFixed(2)}</td>
+                                                        <td>$ {(f.booking_price + f.booking_price * 0.05 - f.booking_price * 0.1).toFixed(2)}</td>
                                                         <td>{f.booking_quantity}</td>
                                                         <td>{moment(f.reserveDate).utc().format('YYYY-MM-DD')}</td>
                                                         <td>{f.categoryName}</td>
@@ -148,7 +152,7 @@ const SingleBookingView = () => {
                                 </div>
                             )}
                             {booking.bookedEvent.length > 0 && (
-                                <div className="card" style={{ width: "95%", marginLeft: "2.5%" }} >
+                                <div className="card mt-3" style={{ width: "95%", marginLeft: "2.5%" }} >
                                     <p className="text-decoration-underline text-center fw-bold fz-4">All event booking details...</p>
                                     <div className="card-body">
                                         <Table>
@@ -164,7 +168,7 @@ const SingleBookingView = () => {
                                                 {booking.bookedEvent.map(e => (
                                                     <tr key={e.id}>
                                                         <td>{e.name}</td>
-                                                        <td>$ {(e.booking_price + e.booking_price * 0.05 -e.booking_price * 0.1).toFixed(2)}</td>
+                                                        <td>$ {(e.booking_price + e.booking_price * 0.05 - e.booking_price * 0.1).toFixed(2)}</td>
                                                         <td>{e.booking_quantity}</td>
                                                         <td>{moment(e.reserveDate).utc().format('YYYY-MM-DD')}</td>
                                                     </tr>
@@ -174,12 +178,40 @@ const SingleBookingView = () => {
                                     </div>
                                 </div>
                             )}
+
+                            {(authUser?.role === 'Admin' || authUser?.role === 'Employee') && (
+                                <ListGroup className='mt-3 list-group-item-success'>
+                                    <ListGroup.Item>
+                                        <Row>
+                                            <Col md={12}><h4>Customer Details</h4></Col>
+                                        </Row>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <Row>
+                                            <Col md={6}>Name</Col>
+                                            <Col md={6}>{`${booking?.customerDetails[0]?.firstName} ${booking?.customerDetails[0]?.lastName}`}</Col>
+                                        </Row>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <Row>
+
+                                            <Col md={6}>Phone</Col>
+                                            <Col md={6}>{booking?.customerDetails[0]?.phone}</Col>
+                                        </Row>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <Row>
+
+                                            <Col md={6}>Email</Col>
+                                            <Col md={6}>{booking?.customerDetails[0]?.email}</Col>
+                                        </Row>
+                                    </ListGroup.Item>
+                                </ListGroup>
+                            )}
                         </div>
                     )}
 
                 </div>
-
-               
             </div>
 
 

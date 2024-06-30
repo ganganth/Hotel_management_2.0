@@ -32,6 +32,7 @@ app.use('/api/profile', require('./routes/profileRoutes'));
 app.use('/api/vehicles', require('./routes/vehicleRoutes'));
 app.use('/api/foods', require('./routes/foodRoutes'));
 app.use('/api/events', require('./routes/eventRoutes'));
+app.use('/api/order', require('./routes/orderRoutes'));
 
 // error handling middleware
 app.use(error);

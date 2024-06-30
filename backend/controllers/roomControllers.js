@@ -346,12 +346,14 @@ const getSingleBookingInSingleCustomer = async (req, res, next) => {
         const [vehicleDetails] = await db.query("SELECT  p.quantity  AS booking_quantity, r.*, p.price As booking_price  FROM place_booking p INNER JOIN vehicle r ON r.id = p.vehicleId WHERE p.bookingId = ? AND p.bookingType =  ?",[bookingId ,'vehicle']);
         const [eventDetails] = await db.query("SELECT  p.quantity  AS booking_quantity, p.reserveDate, r.*, p.price As booking_price FROM place_booking p INNER JOIN event r ON r.id = p.eventId WHERE p.bookingId = ? AND p.bookingType =  ?",[bookingId ,'event']);
         const [foodDetails] = await db.query("SELECT m.name, mc.categoryName, p.quantity AS booking_quantity, p.reserveDate, r.*, p.price As booking_price FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId INNER JOIN menu m ON m.id = r.menuId INNER JOIN menu_category mc ON mc.id = r.categoryId WHERE p.bookingId = ? AND p.bookingType =  ?",[bookingId ,'food']);
+        const [customerDetails] = await db.query("SELECT u.* FROM user u INNER JOIN booking b ON b.customerId = u.Id  WHERE b.id = ? ", [bookingId])
 
         const booking = {
             bookedRooms: roomDetails,
             bookedEvent: eventDetails,
             bookedVehicle: vehicleDetails,
-            bookedFood: foodDetails
+            bookedFood: foodDetails,
+            customerDetails : customerDetails
         }
 
         res.status(200).json({ message: 'Success', booking });
