@@ -213,13 +213,14 @@ const createNewBooking = async (req, res, next) => {
             isPaid,
             remainingBalance,
             customerId,
+            bookingType,
             rooms,
             events,
             vehicle,
             foods
         } = req.body;
 
-    if (!isPaid || !customerId || !checkInDate || !checkOutDate || !Array.isArray(rooms) || rooms.length <= 0 || !paymentType || !totalNightsStay || paidTotalPrice <= 0 || bookingTotalPrice <= 0) {
+    if (!bookingType || !isPaid || !customerId || !checkInDate || !checkOutDate || !Array.isArray(rooms) || rooms.length <= 0 || !paymentType || !totalNightsStay || paidTotalPrice <= 0 || bookingTotalPrice <= 0) {
         return res.status(400).json({ message: 'Invalid Inputs' });
     }
 
@@ -231,9 +232,9 @@ const createNewBooking = async (req, res, next) => {
 
         // Insert booking
         const [result] = await connection.query(`
-            INSERT INTO booking (checkInDate, checkOutDate, totalPrice, paymentType, isPaid, totalPaidPrice, remainBalance,  totalNightsStay, customerId) 
+            INSERT INTO booking (checkInDate, checkOutDate, totalPrice, paymentType, isPaid, totalPaidPrice, remainBalance,  totalNightsStay, customerId, bookingType) 
             VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [formatDateForMySQL(checkInDate), formatDateForMySQL(checkOutDate), bookingTotalPrice, paymentType, isPaid, paidTotalPrice, remainingBalance, totalNightsStay, customerId]);
+        `, [formatDateForMySQL(checkInDate), formatDateForMySQL(checkOutDate), bookingTotalPrice, paymentType, isPaid, paidTotalPrice, remainingBalance, totalNightsStay, customerId, bookingType]);
         
         const bookingId = result.insertId;
 

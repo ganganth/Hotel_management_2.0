@@ -104,7 +104,28 @@ const getSummary = async (req, res, next) => {
         const [result1] = await db.query("SELECT r.mealName AS meal, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId GROUP BY p.foodId, r.mealName ORDER BY TotalQuantity DESC LIMIT 5;");
         const [result2] = await db.query("SELECT r.name As event, COALESCE(SUM(quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN event r ON r.id = p.eventId GROUP BY p.eventId,r.name ORDER BY TotalQuantity DESC LIMIT 5");
 
-        res.status(200).json({ message: 'Success', booking: result, char1: result1, char2: result2 });
+        const COLORS = ['#2F4858', '#488A87', '#7EB693', '#5FA18F', '#335E6C'];
+        let concat1 = [];
+        let concat2 = [];
+
+        if (result1.length > 0) {
+            concat1 = result1.map((item, index) => ({
+                title: item.meal,
+                value: Number(item.TotalQuantity),
+                color: COLORS[index % COLORS.length]
+            }));
+        }
+
+        if (result2.length > 0) {
+            concat2 = result2.map((item, index) => ({
+                title: item.event,
+                value: Number(item.TotalQuantity),
+                color: COLORS[index % COLORS.length]
+            }));
+            
+        }
+
+        res.status(200).json({ message: 'Success', booking: result, char1: concat1, char2: concat2 });
 
     } catch (err) {
         next(err);
@@ -121,10 +142,29 @@ const getFilterFood = async (req, res, next) => {
 
     try {
 
-        const [result] = await db.query("");
+        let result = [];
+      
+        if (date == 1) {
+            [result] = await db.query("SELECT r.mealName AS meal, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId GROUP BY p.foodId, r.mealName ORDER BY TotalQuantity DESC LIMIT 5;");
+        } else if (date == 2) {
+            [result] = await db.query("SELECT r.mealName AS meal, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId WHERE DATE(p.reserveDate) = CURDATE() GROUP BY p.foodId, r.mealName ORDER BY TotalQuantity DESC LIMIT 5;");
+        } else if (date == 3) {
+            [result] = await db.query("SELECT r.mealName AS meal, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId WHERE DATE(p.reserveDate) >= CURDATE() - INTERVAL 7 DAY GROUP BY p.foodId, r.mealName ORDER BY TotalQuantity DESC LIMIT 5;");
+        } else if (date == 4) {
+            [result] = await db.query("SELECT r.mealName AS meal, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId WHERE DATE(p.reserveDate) >= CURDATE() - INTERVAL 30 DAY GROUP BY p.foodId, r.mealName ORDER BY TotalQuantity DESC LIMIT 5;");
+        }
 
+        const COLORS = ['#2F4858', '#488A87', '#7EB693', '#5FA18F', '#335E6C'];
+        let concat1 = [];
+        if (result.length > 0) {
+            concat1 = result.map((item, index) => ({
+                title: item.meal,
+                value: Number(item.TotalQuantity),
+                color: COLORS[index % COLORS.length]
+            }));
+        }
 
-        res.status(200).json({ message: 'Success', booking: result });
+        res.status(200).json({ message: 'Success', booking: concat1 });
 
     } catch (err) {
         next(err);
@@ -140,11 +180,30 @@ const getFilterEvent = async (req, res, next) => {
     }
 
     try {
+        
+        let result = [];
+      
+        if (date == 1) {
+            [result] = await db.query("SELECT r.name As event, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN event r ON r.id = p.eventId GROUP BY p.eventId,r.name ORDER BY TotalQuantity DESC LIMIT 5;");
+        } else if (date == 2) {
+            [result] = await db.query("SELECT r.name As event, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN event r ON r.id = p.eventId WHERE DATE(p.reserveDate) = CURDATE() GROUP BY p.eventId,r.name ORDER BY TotalQuantity DESC LIMIT 5;");
+        } else if (date == 3) {
+            [result] = await db.query("SELECT r.name As event, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN event r ON r.id = p.eventId WHERE DATE(p.reserveDate) >= CURDATE() - INTERVAL 7 DAY GROUP BY p.eventId,r.name ORDER BY TotalQuantity DESC LIMIT 5;");
+        } else if (date == 4) {
+            [result] = await db.query("SELECT r.name As event, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN event r ON r.id = p.eventId WHERE DATE(p.reserveDate) >= CURDATE() - INTERVAL 30 DAY GROUP BY p.eventId,r.name ORDER BY TotalQuantity DESC LIMIT 5;");
+        }
 
-        const [result] = await db.query("");
-       
+        const COLORS = ['#2F4858', '#488A87', '#7EB693', '#5FA18F', '#335E6C'];
+        let concat1 = [];
+        if (result.length > 0) {
+            concat1 = result.map((item, index) => ({
+                title: item.event,
+                value: Number(item.TotalQuantity),
+                color: COLORS[index % COLORS.length]
+            }));
+        }
 
-        res.status(200).json({ message: 'Success', booking: result });
+        res.status(200).json({ message: 'Success', booking: concat1 });
 
     } catch (err) {
         next(err);
@@ -161,8 +220,7 @@ const getSearch = async (req, res, next) => {
 
     try {
 
-        const [result] = await db.query("");
-     
+        const [result] = await db.query("SELECT * FROM booking WHERE paymentType = ? AND isPaid = ? AND month(checkInDate) = ? AND bookingType = ?",[payment, customer, month, reservationType]);
 
         res.status(200).json({ message: 'Success', booking: result });
 
