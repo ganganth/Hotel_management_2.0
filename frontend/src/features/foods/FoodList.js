@@ -52,7 +52,7 @@ const FoodList = () => {
         <>
             <div className="d-flex align-items-center justify-content-between">
                 <h1>Food Management</h1>
-                <button className='btn btn-dark' onClick={() => navigate('/dash/employee/food-management/orders')} >View All Orders</button>
+                {/* <button className='btn btn-dark' onClick={() => navigate('/dash/employee/food-management/orders')} >View All Orders</button> */}
                 <button className='btn btn-primary d-flex align-items-center gap-2' onClick={() => navigate('/dash/employee/food-management/add')}><MdFastfood /> Add New Food Menu</button>
             </div>
             <hr></hr>

@@ -49,7 +49,7 @@ const VehicleList = () => {
         <div>
             <div className="d-flex align-items-center justify-content-between">
                 <h1>Vehicle Management</h1>
-                <button className='btn btn-dark' onClick={() => navigate('/dash/employee/vehicle-management/rentals')} >View All Rentals</button>
+                {/* <button className='btn btn-dark' onClick={() => navigate('/dash/employee/vehicle-management/rentals')} >View All Rentals</button> */}
                 <button className='btn btn-primary d-flex align-items-center gap-2' onClick={() => navigate('/dash/employee/vehicle-management/add')}><MdQueue /> Add New Vehicle</button>
             </div>
             <hr></hr>

@@ -14,7 +14,7 @@ const OrderManagement = () => {
     const [orderType, setOrderType] = useState(false);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [title, setTitle] = useState('All Booking Details')
-    const [orderTypeTitle, setOrderTypeTitle] = useState(`${moment(currentDate).format('YYYY-MM-DD')} reserve room details`)
+    const [orderTypeTitle, setOrderTypeTitle] = useState(`${moment(currentDate).format('YYYY-MM-DD')} Reserve Room Details`)
     const [allBookingType, setAllBookingType] = useState([]);
     const [orderRange, setOrderRange] = useState(0);
     const [reservationType, setReservationType] = useState(1);
@@ -55,6 +55,7 @@ const OrderManagement = () => {
 
     const handleAllOrderType = async () => {
         try {
+            setAllBookingType([]);
             const response = await axiosPrivate.get(`/api/order/filterDataType/?date=${currentDate}&reservationType=${reservationType}`);
             setAllBookingType(response.data.booking);
             setOrderTypeTitle(response.data.title);
@@ -66,8 +67,8 @@ const OrderManagement = () => {
     return (
         <div style={{ width: "95%", marginInlineStart: "2.5%" }}>
             <div className="d-flex gap-2">
-                <button className="btn btn-outline-primary col-6" style={!orderType ? { backgroundColor: "#0d6efd", color: "white" } : {}} type="button" onClick={() => {setOrderType(false); handleAllOrderType();}}>All order Details</button>
-                <button className="btn btn-outline-primary col-6" style={orderType ? { backgroundColor: "#0d6efd", color: "white" } : {}} type="button" onClick={() => { setOrderType(true); setTitle('All Booking Details'); }}>Order Type Details</button>
+                <button className="btn btn-outline-primary col-6" style={!orderType ? { backgroundColor: "#0d6efd", color: "white" } : {}} type="button" onClick={() => { setOrderType(false); handleAllOrderType(); }}>All order Details</button>
+                <button className="btn btn-outline-primary col-6" style={orderType ? { backgroundColor: "#0d6efd", color: "white" } : {}} type="button" onClick={() => { setOrderType(true); setTitle('All Booking Details'); setAllBookingType([]); }}>Order Type Details</button>
             </div>
             {orderType ? (
                 <>
@@ -99,21 +100,29 @@ const OrderManagement = () => {
                             <Table>
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
                                         <th>Id</th>
-                                        {(reservationType === 1 || reservationType === 4) && (
+                                        {allBookingType[0].bookingType === 'food' && (
+                                            <>
+                                                <th>Meal name</th>
+                                                <th>Meal type</th>
+                                            </>
+                                        )}
+                                        {allBookingType[0].bookingType !== 'food' && (
+                                            <th>Name</th>
+                                        )}
+                                        {(allBookingType[0].bookingType === 'room' || allBookingType[0].bookingType === 'vehicle') && (
                                             <>
                                                 <th>Check In Date</th>
                                                 <th>Check Out Date</th>
                                             </>
                                         )}
-                                        {(reservationType === 2 || reservationType === 3) && (
+                                        {(allBookingType[0].bookingType === 'food' || allBookingType[0].bookingType === 'event') && (
                                             <th>Reserve Date</th>
                                         )}
-                                        {reservationType === 2 && (
+                                        {allBookingType[0].bookingType === 'event' && (
                                             <th>Total People</th>
                                         )}
-                                        {(reservationType === 1 || reservationType === 3 || reservationType === 3) && (
+                                        {allBookingType[0].bookingType !== 'event'  && (
                                             <th>quantity</th>
                                         )}
 
@@ -122,18 +131,26 @@ const OrderManagement = () => {
                                 <tbody>
                                     {allBookingType.map(booking => (
                                         <tr key={booking.id}>
-                                            <td>{booking.name}</td>
                                             <td>{booking.id}</td>
-                                            {(reservationType === 1 || reservationType === 4) && (
+                                            {booking.bookingType === 'food'  && (
+                                                <>
+                                                    <td>{booking.mealName}</td>
+                                                    <td>{booking.name}</td>
+                                                </>
+                                            )}
+                                            {booking.bookingType !== 'food'  && (
+                                                <td>{booking.name}</td>
+                                            )}
+                                            {(booking.bookingType === 'room' || booking.bookingType === 'vehicle') && (
                                                 <>
                                                     <td>{moment(booking.checkInDate).utc().format('YYYY-MM-DD')}</td>
                                                     <td>{moment(booking.checkOutDate).utc().format('YYYY-MM-DD')}</td>
                                                 </>
                                             )}
-                                            {(reservationType === 2 || reservationType === 3) && (
+                                            {(booking.bookingType === 'event' || booking.bookingType === 'food') && (
                                                 <td>{moment(booking.reserveDate).utc().format('YYYY-MM-DD')}</td>
                                             )}
-                                            <td>{booking.quantity}</td>
+                                            <td>{booking.booking_quantity}</td>
                                         </tr>
                                     ))}
                                 </tbody>

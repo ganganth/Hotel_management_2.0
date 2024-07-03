@@ -38,7 +38,7 @@ const RoomList = (props) => {
                 <>
                     <aside className='employeeList-header'>
                         <h1>Room Management</h1>
-                        <button className='btn btn-dark' onClick={() => navigate('/dash/employee/room-management/bookings')}>View All Bookings</button>
+                        {/* <button className='btn btn-dark' onClick={() => navigate('/dash/employee/room-management/bookings')}>View All Bookings</button> */}
                         <button className='btn btn-primary' onClick={() => navigate('/dash/employee/room-management/add')}>Create New Room Type <MdBedroomParent /></button>
                     </aside>
 

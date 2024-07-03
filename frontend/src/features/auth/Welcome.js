@@ -1,15 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import moment from "moment";
+import { Alert, Table, Badge } from 'react-bootstrap';
 import { FaPrint } from "react-icons/fa";
 import '../../styles/welcome.css';
 import { MdFilterList } from "react-icons/md";
 import { useReactToPrint } from 'react-to-print'
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import { PieChart } from 'react-minimal-pie-chart';
 
 const Welcome = () => {
 
     const [filter, setFilter] = useState(false);
-
+    const [allBooking, setAllBooking] = useState([]);
+    const axiosPrivate = useAxiosPrivate();
+    const [summary, setSummary] = useState([]);
+    const [chart1, setChart1] = useState([]);
+    const [chart2, setChart2] = useState([]);
+    const [paymentType, setPaymentType] = useState('full');
+    const [customerType, setCustomerType] = useState('Foreign');
+    const [month, setMonth] = useState(1);
+    const [reservationType, setReservationType] =useState(1);
+ 
     const contentToPrint = useRef(null);
     const contentToPrint1 = useRef(null);
     const contentToPrint2 = useRef(null);
@@ -19,6 +30,73 @@ const Welcome = () => {
         onAfterPrint: () => console.log("after printing..."),
         removeAfterPrint: true,
     });
+
+
+    useEffect(() => {
+        const getAllBookings = async () => {
+            try {
+                const response = await axiosPrivate.get('/api/order/');
+                setAllBooking(response.data.booking);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        const getSummary = async () => {
+            try {
+                const response = await axiosPrivate.get('/api/order/summary');
+                setSummary(response.data.booking);
+                setChart1(response.data.char1);
+                setChart2(response.data.char2);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        getAllBookings();
+        getSummary();
+    }, [axiosPrivate, filter]);
+
+    const COLORS = ['#2F4858', '#488A87', '#7EB693', '#5FA18F', '#335E6C'];
+
+    const concat1 = chart1.map((item, index) => ({
+        title: item.meal,
+        value: Number(item.TotalQuantity),
+        color: COLORS[index % COLORS.length]
+    }));
+
+    const concat2 = chart2.map((item, index) => ({
+        title: item.event,
+        value: Number(item.TotalQuantity),
+        color: COLORS[index % COLORS.length]
+    }));
+
+    const handleFoodFunc = async (date) => {
+        try {
+            const response = await axiosPrivate.get(`/api/order/foodWithDate?date${date}`);
+            setChart1(response.data.char1);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const handleeventFunc = async  (date) => {
+        try {
+            const response = await axiosPrivate.get(`/api/order/eventWithDate?date=${date}`);
+            setChart2(response.data.char2);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const handleSearchFilter = async () => {
+        try {
+            const response = await axiosPrivate.get(`/api/order/searchFilter?payment=${paymentType}&customer=${customerType}&month=${month}&reservationType=${reservationType}`);
+            setAllBooking(response.data.booking);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
 
     return (
         <div className="container d-flex">
@@ -30,8 +108,7 @@ const Welcome = () => {
                         <div className="card" style={{ height: "120px" }}>
                             <div className="card-body">
                                 <p className="text-center">Today total booking:</p>
-                                <p className="text-center">12</p>
-
+                                <p className="text-center">{(summary && summary.length > 0) ? summary[0].totalBooking : 0}</p>
                             </div>
                         </div>
                     </div>
@@ -39,8 +116,7 @@ const Welcome = () => {
                         <div className="card" style={{ height: "120px" }}>
                             <div className="card-body">
                                 <p className="text-center">Today total income:</p>
-                                <p className="text-center">$ 45</p>
-
+                                <p className="text-center">$ {(summary && summary.length > 0) ? summary[0].totalPrice : 0}</p>
                             </div>
                         </div>
                     </div>
@@ -48,111 +124,62 @@ const Welcome = () => {
                     <div className="col-sm-4">
                         <div className="card" style={{ height: "120px" }}>
                             <div className="card-body">
-                                <p className="text-center">Today total number of customer:</p>
-                                <p className="text-center">4</p>
-
+                                <p className="text-center">Today total remain balance:</p>
+                                <p className="text-center">$ {(summary && summary.length > 0) ? summary[0].totalRemain : 0}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div className='row mt-3 d-flex'>
-                    <select className="form-select col-3 ml-2 align-items-start" aria-label="Default select example" style={{ width: "20%" }}>
-                        <option selected>Today</option>
-                        <option value="1">Last 7 days.</option>
-                        <option value="2">Last 30 days</option>
-                        <option value="3">All</option>
-                    </select>
-                    <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "55%" }} onClick={() => { handlePrint(null, () => contentToPrint.current); }}><FaPrint /></button>
+                    <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "75%" }} onClick={() => { handlePrint(null, () => contentToPrint.current); }}><FaPrint /></button>
                     <button type="button" className="btn btn-primary col-2 align-items-end" style={{ marginLeft: "5%" }} onClick={() => setFilter(!filter)}> <MdFilterList /> Filter</button>
                 </div>
                 <div ref={contentToPrint}>
                     <div className='row mt-3'>
                         <p className='text-center text-mute fz-4 fw-bold'>Booking Details</p>
+                        <hr />
                     </div>
 
                     <div className='row mt-3' style={{ maxHeight: "600px", overflowY: "auto" }}>
-                        <table className="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Order Id</th>
-                                    <th scope="col">Order Date</th>
-                                    <th scope="col">Order State</th>
+                        {allBooking && allBooking.length > 0 ? (
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        <th>Booking ID</th>
+                                        <th>Check In Date</th>
+                                        <th>Check Out Date</th>
+                                        <th>Booked Date</th>
+                                        <th>Payment Status</th>
+                                        <th>Total Price</th>
+                                        <th>Payment Type</th>
+                                        <th>Remaining Balance</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {allBooking.map(booking => (
+                                        <tr key={booking.id}>
+                                            <td>{booking.id}</td>
+                                            <td>{moment(booking.checkInDate).utc().format('YYYY-MM-DD')}</td>
+                                            <td>{moment(booking.checkOutDate).utc().format('YYYY-MM-DD')}</td>
+                                            <td>{moment(booking.createdAt).utc().format('YYYY-MM-DD')}</td>
+                                            <td>
+                                                <div className='d-flex align-items-center justify-content-center'>{booking.isPaid === 'yes' ? (<Badge bg='success'>paid</Badge>) : (<Badge bg='warning'>not completed</Badge>)}</div>
+                                            </td>
+                                            <td>{booking.totalPrice}</td>
+                                            <td>
+                                                <div className='d-flex align-items-center justify-content-center'><Badge bg='dark'>{booking.paymentType === 'full' ? 'Full' : 'Half'}</Badge></div>
+                                            </td>
+                                            <td>{booking.isPaid === 'yes' ? 'No remaining balance' : `$${booking.remainBalance.toFixed(2)}`}</td>
 
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">2</th>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">3</th>
-                                    <td colSpan="2">Larry the Bird</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">2</th>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">3</th>
-                                    <td colSpan="2">Larry the Bird</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">2</th>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">3</th>
-                                    <td colSpan="2">Larry the Bird</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">2</th>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">3</th>
-                                    <td colSpan="2">Larry the Bird</td>
-                                    <td><button type="button" className="btn btn-danger">Delete</button></td>
-                                </tr>
-
-                            </tbody>
-                        </table>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        ) : (
+                            <Alert variant='info'>No bookings yet</Alert>
+                        )}
                     </div>
                 </div>
             </div>
@@ -163,20 +190,20 @@ const Welcome = () => {
                         <div className='row'> <p className='text-center fz-4 fw-bold'>Filter Orders</p></div>
                         <div className='row d-flex mt-5'>
                             <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }}>Payment Status :</label>
-                            <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }}>
-                                <option value="1">full</option>
-                                <option value="2">half</option>
+                            <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }} onChange={e =>setPaymentType(e.target.value)}>
+                                <option value="full">full</option>
+                                <option value="half">half</option>
                             </select>
                         </div>
                         <div className='row d-flex mt-5'>
                             <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }}>Customer Type :</label>
-                            <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }}>
-                                <option value="1">Foreign</option>
-                                <option value="2">Local</option>
+                            <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }} onChange={e =>setCustomerType(e.target.value)}>
+                                <option value="Foreign">Foreign</option>
+                                <option value="Local">Local</option>
                             </select>
                         </div>
                         <div className='row d-flex mt-5'>
-                            <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }}>Month :</label>
+                            <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }} onChange={e =>setMonth(e.target.value)}>Month :</label >
                             <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }}>
                                 <option value="1">January</option>
                                 <option value="2">February</option>
@@ -193,20 +220,17 @@ const Welcome = () => {
                             </select>
                         </div>
                         <div className='row d-flex mt-5'>
-                            <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }}>Reservation Type :</label>
+                            <label htmlFor="exampleInputEmail1" className="label col-6" style={{ width: "20" }} onChange={e =>setReservationType(e.target.value)}>Reservation Type :</label>
                             <select className="form-select col-6" aria-label="Default select example" style={{ width: "40%" }}>
                                 <option value="1">All</option>
                                 <option value="2">Rooms & event</option>
                                 <option value="3">Rooms & foods</option>
                                 <option value="4">Rooms & vehicle</option>
-                                <option value="5">Rooms & event & foods</option>
-                                <option value="6">Rooms & event & vehicle</option>
-                                <option value="7">Rooms & foods & vehicle</option>
                             </select>
                         </div>
                         <div className='row mt-5'>
                             <div class="d-grid col-6 mx-auto">
-                                <button className="btn btn-primary" type="button">Search</button>
+                                <button className="btn btn-primary" type="button" onClick={() =>handleSearchFilter()}>Search</button>
                             </div>
                         </div>
 
@@ -218,15 +242,36 @@ const Welcome = () => {
                             <div className='d-flex'>
                                 <label htmlFor="exampleInputEmail1" className="label " style={{ width: "20$" }}>Top five foods :</label>
                                 <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "25%" }} onClick={() => { handlePrint(null, () => contentToPrint1.current); }}><FaPrint /></button>
-                                <select className="form-select c ml-2 " aria-label="Default select example" style={{ width: "40%", marginLeft: "10%" }}>
-                                    <option selected>Today</option>
-                                    <option value="1">Last 7 days.</option>
-                                    <option value="2">Last 30 days</option>
-                                    <option value="3">All</option>
+                                <select className="form-select c ml-2 " aria-label="Default select example" style={{ width: "40%", marginLeft: "10%" }} onChange={(e) => handleFoodFunc(e.target.value)}>
+                                    <option value="1">All</option>
+                                    <option value="2">Today</option>
+                                    <option value="3">Last 7 days.</option>
+                                    <option value="4">Last 30 days</option>
                                 </select>
                             </div >
                             <div ref={contentToPrint1}>
-                                <h1>chart 1</h1>
+                                {chart1 && chart1.length > 0 ? (
+                                    <>
+                                        <PieChart
+                                            data={concat1}
+                                            style={{ height: "200px" }}
+                                            lineWidth={40}
+                                        />
+
+                                        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                            {concat1.map((entry) => (
+                                                <div key={entry.value} style={{ display: 'flex', alignItems: 'center', margin: 'auto' }}>
+                                                    <div style={{ width: '15px', height: '15px', backgroundColor: entry.color }} />
+                                                    <span>{entry.title}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                    </>
+
+                                ) : (
+                                    <p className='text-center fs-3'>No data found</p>
+                                )}
                             </div>
 
                         </div>
@@ -234,34 +279,41 @@ const Welcome = () => {
                             <div className='d-flex'>
                                 <label htmlFor="exampleInputEmail1" className="label " style={{ width: "20$" }}>Top five events :</label>
                                 <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "25%" }} onClick={() => { handlePrint(null, () => contentToPrint2.current); }}><FaPrint /></button>
-                                <select className="form-select c ml-2 " aria-label="Default select example" style={{ width: "40%", marginLeft: "10%" }}>
-                                    <option selected>Today</option>
-                                    <option value="1">Last 7 days.</option>
-                                    <option value="2">Last 30 days</option>
-                                    <option value="3">All</option>
+                                <select className="form-select c ml-2 " aria-label="Default select example" style={{ width: "40%", marginLeft: "10%" }} onChange={(e) => handleeventFunc(e.target.value)}>
+                                    <option value="1">All</option>
+                                    <option value="2">Today</option>
+                                    <option value="3">Last 7 days.</option>
+                                    <option value="4">Last 30 days</option>
                                 </select>
                             </div>
                             <div ref={contentToPrint2}>
 
-                                <div className='anl-pie-chart-container'>
-                                    <ResponsiveContainer>
-                                        <PieChart>
-                                            {/* <Pie data={data} innerRadius={60} outerRadius={100} fill='#ccc' paddingAngle={5} dataKey='value' label={{ fill: 'black', fontSize: 13 }} onClick={handlePieClick}>
-                                                {data.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip content={<CustomTooltip />} /> */}
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </div>
+                                {chart2 && chart2.length > 0 ? (
+                                    <>
+                                        <PieChart
+                                            data={concat2}
+                                            style={{ height: "200px" }}
+                                            lineWidth={40}
+                                        />
+
+                                        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                            {concat2.map((entry) => (
+                                                <div key={entry.value} style={{ display: 'flex', alignItems: 'center', margin: 'auto' }}>
+                                                    <div style={{ width: '15px', height: '15px', backgroundColor: entry.color, marginRight: '5px' }} />
+                                                    <span>{entry.title}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+
+                                ) : (
+                                    <p className='text-center fs-3'>No data found</p>
+                                )}
 
                             </div>
                         </div>
                     </div>
-                )
-                }
-
+                )}
             </div >
 
         </div >

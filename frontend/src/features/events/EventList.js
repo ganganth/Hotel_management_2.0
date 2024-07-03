@@ -55,7 +55,7 @@ const EventList = () => {
         <>
             <div className="d-flex align-items-center justify-content-between">
                 <h1>Event List</h1>
-                <button className='btn btn-dark' onClick={() => navigate('/dash/employee/event-management/orders')} >All Event Orders</button>
+                {/* <button className='btn btn-dark' onClick={() => navigate('/dash/employee/event-management/orders')} >All Event Orders</button> */}
                 <button className="btn btn-primary d-flex align-items-center gap-2" onClick={() => navigate('/dash/employee/event-management/add')} ><MdOutlineEditCalendar /> Add New Event</button>
             </div>
             <hr></hr>
