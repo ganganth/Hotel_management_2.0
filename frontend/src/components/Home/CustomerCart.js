@@ -7,9 +7,12 @@ import { toast } from 'react-toastify';
 import Payment from './Payment';
 import Reviews from './Reviews';
 import Ebill from './Ebill';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+
 
 const CustomerCart = () => {
 
+    const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [roomsOrder, setRoomsOrder] = useState([]);
@@ -25,6 +28,8 @@ const CustomerCart = () => {
     const [total, setTotal] = useState(0);
     const [discount, setDiscount] = useState(0);
     const [tax, setTax] = useState(0);
+    const [taxRate, setTaxRate] = useState();
+    const [discountRate, setDiscountRate] = useState();
 
     const [paymentPopup, setPaymentPopup] = useState(false);
     const [ratePopup, setRatePopup] = useState(false);
@@ -32,6 +37,22 @@ const CustomerCart = () => {
     const [billPrint, setBillPrint] = useState(false)
 
     useEffect(() => {
+        const getTaxRates = async () => {
+            try {
+                const response = await axiosPrivate.get('/api/order/tax');
+                setTaxRate(response.data.tax);
+                setDiscountRate(response.data.discount);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        getTaxRates();
+    },[axiosPrivate]);
+
+    useEffect(() => {
+
+        // console.log("d",discountRate)
+        // console.log("t",taxRate)
         const roomsOrder = items.filter(i => i.reservationType === 'rooms');
         const foodsOrder = items.filter(i => i.reservationType === 'foods');
         const eventsOrder = items.filter(i => i.reservationType === 'events');
@@ -42,8 +63,8 @@ const CustomerCart = () => {
         const TotalEventPrice = eventsOrder.map(item => item.Total_price).reduce((acc, price) => acc + price, 0);
         const TotalVehiclePrice = vehiclesOrder.map(item => item.Total_price).reduce((acc, price) => acc + price, 0);
 
-        const Discount = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice) * 0.1;
-        const GovernmentTax = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice) * 0.05;
+        const Discount = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice) * discountRate;
+        const GovernmentTax = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice) * taxRate;
         const Total = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice + GovernmentTax) - Discount
 
         setRoomsOrder(roomsOrder);
@@ -59,7 +80,7 @@ const CustomerCart = () => {
         setDiscount(Discount)
         setTax(GovernmentTax)
 
-    }, [items]);
+    }, [items,taxRate,discountRate]);
 
     const handleDelete = (d) => {
 

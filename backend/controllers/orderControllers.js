@@ -69,7 +69,7 @@ const getFilterOrderDetailsType = async (req, res, next) => {
 
         if (reservationType == 1) {
 
-            [result] = await db.query("SELECT p.bookingType, b.paymentType, p.quantity  AS booking_quantity, r.*, p.price As booking_price FROM place_booking p INNER JOIN room_type r ON r.id = p.roomId INNER JOIN booking b ON b.id = p.bookingId  WHERE b.CheckInDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'room']);
+            [result] = await db.query("SELECT p.bookingType, b.paymentType, p.quantity  AS booking_quantity, r.*, p.price As booking_price, b.checkInDate, b.checkOutDate FROM place_booking p INNER JOIN room_type r ON r.id = p.roomId INNER JOIN booking b ON b.id = p.bookingId  WHERE b.CheckInDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'room']);
             title = `${formatDateForMySQL(date)} Reserve Rooms Details`
 
         } else if (reservationType == 2) {
@@ -122,7 +122,7 @@ const getSummary = async (req, res, next) => {
                 value: Number(item.TotalQuantity),
                 color: COLORS[index % COLORS.length]
             }));
-            
+
         }
 
         res.status(200).json({ message: 'Success', booking: result, char1: concat1, char2: concat2 });
@@ -143,7 +143,7 @@ const getFilterFood = async (req, res, next) => {
     try {
 
         let result = [];
-      
+
         if (date == 1) {
             [result] = await db.query("SELECT r.mealName AS meal, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId GROUP BY p.foodId, r.mealName ORDER BY TotalQuantity DESC LIMIT 5;");
         } else if (date == 2) {
@@ -180,9 +180,9 @@ const getFilterEvent = async (req, res, next) => {
     }
 
     try {
-        
+
         let result = [];
-      
+
         if (date == 1) {
             [result] = await db.query("SELECT r.name As event, COALESCE(SUM(p.quantity), 0) AS TotalQuantity FROM place_booking p INNER JOIN event r ON r.id = p.eventId GROUP BY p.eventId,r.name ORDER BY TotalQuantity DESC LIMIT 5;");
         } else if (date == 2) {
@@ -212,7 +212,7 @@ const getFilterEvent = async (req, res, next) => {
 
 const getSearch = async (req, res, next) => {
 
-    const { reservationType,month,customer,payment } = req.query;
+    const { reservationType, month, customer, payment } = req.query;
 
     if (!reservationType || !month || !customer || !payment) {
         return res.status(400).json({ message: 'Invalid Inputs' });
@@ -220,7 +220,7 @@ const getSearch = async (req, res, next) => {
 
     try {
 
-        const [result] = await db.query("SELECT * FROM booking WHERE paymentType = ? AND isPaid = ? AND month(checkInDate) = ? AND bookingType = ?",[payment, customer, month, reservationType]);
+        const [result] = await db.query("SELECT * FROM booking WHERE paymentType = ? AND isPaid = ? AND month(checkInDate) = ? AND bookingType = ?", [payment, customer, month, reservationType]);
 
         res.status(200).json({ message: 'Success', booking: result });
 
@@ -229,6 +229,85 @@ const getSearch = async (req, res, next) => {
     }
 }
 
+const AddReview = async (req, res, next) => {
+
+    const { userId, message } = req.query;
+
+    if (!userId || !message) {
+        return res.status(400).json({ message: 'Invalid Inputs' });
+    }
+
+    try {
+
+        await db.query("INSERT INTO review (customerId, message) VALUES (?, ?)", [userId, message]);
+
+        res.status(200).json({ message: 'Review added successfully' });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getRates = async (req, res, next) => {
+
+    try {
+
+        [result] = await db.query("SELECT rates FROM management");
+
+        let discount = result[1].rates;
+        let tax = result[0].rates;
+
+        res.status(200).json({ message: 'success', tax: tax, discount: discount });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getRatesDetails = async (req, res, next) => {
+
+    try {
+
+        [result] = await db.query("SELECT * FROM management");
+
+        res.status(200).json({ message: 'success', rates: result });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getRatesUpdate = async (req, res, next) => {
+
+    const { id, rate } = req.query;
+
+    if (!id || !rate) {
+        return res.status(400).json({ message: 'Invalid Inputs' });
+    }
+
+    try {
+        await db.query("UPDATE management SET rates = ? WHERE id = ?", [rate, id]);
+        res.status(200).json({ message: 'successfully updated' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getRatesDelete = async (req, res, next) => {
+    const { id } = req.query;
+
+    if (!id) {
+        return res.status(400).json({ message: 'Invalid Inputs' });
+    }
+
+    try {
+        await db.query("DELETE FROM management WHERE id = ?", [id]);
+        res.status(200).json({ message: 'successfully deleted' });
+
+    } catch (err) {
+        next(err);
+    }
+}
 
 module.exports = {
     getAllOrderDetails,
@@ -237,5 +316,10 @@ module.exports = {
     getSummary,
     getFilterFood,
     getFilterEvent,
-    getSearch
+    getSearch,
+    AddReview,
+    getRates,
+    getRatesDetails,
+    getRatesUpdate,
+    getRatesDelete
 }

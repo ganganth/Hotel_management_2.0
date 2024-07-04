@@ -62,6 +62,7 @@ import CustomerCart from "./components/Home/CustomerCart";
 import MyReservation from "./components/MyReservation";
 import CustomerHeader from "./components/Home/CustomerHeader";
 import OrderManagement from "./components/OrderManagement";
+import TaxManagement from "./components/TaxManagement";
 
 const App = () => {
   return (
@@ -316,6 +317,15 @@ const App = () => {
               <Route
                 path="order-management"
                 element={<OrderManagement />}
+              />
+            </Route>
+          </Route>
+
+          <Route element={<RequireAuth allowedRoles={["Employee", "Admin"]} />}>
+            <Route path="dash" element={<DashLayout />}>
+              <Route
+                path="tax-management"
+                element={<TaxManagement />}
               />
             </Route>
           </Route>

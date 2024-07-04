@@ -26,4 +26,19 @@ router.route('/eventWithDate')
 router.route('/searchFilter')
     .get(orderControllers.getSearch)
 
+router.route('/AddReview')
+    .post(orderControllers.AddReview)
+
+router.route('/tax')
+    .get(orderControllers.getRates)
+
+router.route('/taxDetails')
+    .get(orderControllers.getRatesDetails)
+
+router.route('/taxUpdate')
+    .put(orderControllers.getRatesUpdate)
+
+router.route('/taxDelete')
+    .delete(orderControllers.getRatesDelete)
+
 module.exports = router;

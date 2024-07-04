@@ -1,27 +1,27 @@
-import {useDispatch, useSelector} from 'react-redux';
-import {logoutAuthUser, selectAuthUser} from '../app/auth/authSlice';
-import {Link} from 'react-router-dom';
-import { MdDashboard, MdAccountCircle, MdOutlinePowerSettingsNew, MdSupervisedUserCircle, MdRoomPreferences, MdOutlineFoodBank, MdBookmark, MdDirectionsCarFilled, MdEvent } from "react-icons/md";
-import {FaUsers} from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutAuthUser, selectAuthUser } from '../app/auth/authSlice';
+import { Link } from 'react-router-dom';
+import { MdDashboard, MdAccountCircle, MdOutlinePowerSettingsNew, MdSupervisedUserCircle, MdRoomPreferences, MdOutlineFoodBank, MdBookmark, MdDirectionsCarFilled, MdEvent, MdCameraswitch } from "react-icons/md";
+import { FaUsers } from 'react-icons/fa';
 
 
 const Sidebar = () => {
 
     const dispatch = useDispatch();
-    const {role} = useSelector(selectAuthUser);
+    const { role } = useSelector(selectAuthUser);
 
     const currentPath = window.location.pathname;
 
     return (
         <aside className="dash-layout-sidebar">
 
-            <button className='logout-btn' style={{backgroundColor:"#232955"}} onClick={() => dispatch(logoutAuthUser())}>
+            <button className='logout-btn' style={{ backgroundColor: "#232955" }} onClick={() => dispatch(logoutAuthUser())}>
                 <MdOutlinePowerSettingsNew />
                 Logout
             </button>
 
             <div className='sidebar-logo' >
-                <img src='/img/logo.jpg' alt='logo' style={{borderRadius:50,height:"100px",width:"100px"}}></img>
+                <img src='/img/logo.jpg' alt='logo' style={{ borderRadius: 50, height: "100px", width: "100px" }}></img>
             </div>
 
             <nav className='sidebar-nav'>
@@ -113,12 +113,12 @@ const Sidebar = () => {
                         </>
                     )} */}
 
-                    
-                    
+
+
 
                     {(role === 'Employee' || role === 'Admin') && (
                         <>
-                            
+
                             <li>
                                 <Link to='/dash/rooms' className={`${currentPath === '/dash/rooms' ? 'bg-white text-dark' : ''}`}>
                                     <MdRoomPreferences />
@@ -154,6 +154,13 @@ const Sidebar = () => {
                                 <Link to='/dash/order-management' className={`${currentPath === '/dash/order-management' ? 'bg-white text-dark' : ''}`}>
                                     <MdBookmark />
                                     Order Management
+                                </Link>
+                            </li>
+
+                            <li>
+                                <Link to='/dash/tax-management' className={`${currentPath === '/dash/tax-management' ? 'bg-white text-dark' : ''}`}>
+                                    <MdCameraswitch />
+                                    Rate/Tax Management
                                 </Link>
                             </li>
                         </>
