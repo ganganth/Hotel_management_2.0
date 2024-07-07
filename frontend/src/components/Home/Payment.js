@@ -16,25 +16,7 @@ const Payment = (props) => {
     const [filteredFoodsOrder, setFilteredFoodsOrder] = useState([]);
     const [filteredEventsOrder, setFilteredEventsOrder] = useState([]);
     const [filteredVehiclesOrder, setFilteredVehiclesOrder] = useState([]);
-    const [bookingType, setBookingType] = useState('');
-
-    if(props.vehiclesOrder.length > 0 && props.eventsOrder.length > 0 && props.foodsOrder.length > 0 && props.roomsOrder.length > 0){
-        setBookingType('A');
-    }else if (props.roomsOrder.length > 0){
-        setBookingType('R');
-    }else if (props.foodsOrder.length > 0 && props.roomsOrder.length > 0){
-        setBookingType('RF')
-    }else if (props.eventsOrder.length > 0 && props.roomsOrder.length > 0){
-        setBookingType('RE')
-    }else if (props.vehiclesOrder.length > 0 && props.roomsOrder.length > 0){
-        setBookingType('RV')
-    }else if (props.foodsOrder.length > 0 && props.roomsOrder.length > 0 && props.eventsOrder.length > 0){
-        setBookingType('REF')
-    }else if (props.foodsOrder.length > 0 && props.roomsOrder.length > 0 && props.vehiclesOrder.length > 0){
-        setBookingType('RFV')
-    }else if (props.vehiclesOrder.length> 0 && props.roomsOrder.length > 0 && props.eventsOrder.length > 0){
-        setBookingType('RVE')
-    }
+    
 
     useEffect(() => {
         if (props.roomsOrder.length > 0) {
@@ -107,11 +89,12 @@ const Payment = (props) => {
     const addBooking = async (booking) => {
 
         try {
-            await axiosPrivate.post('/api/rooms/bookings', JSON.stringify(booking));
+            const response = await axiosPrivate.post('/api/rooms/bookings', JSON.stringify(booking));
             toast.success('Booking Successful');
             props.setPaymentPopup(false);
             props.setRatePopup(true); 
             props.setBillPrint(true);
+            return response;
         } catch (err) {
             console.log(err);
         }
@@ -135,10 +118,12 @@ const Payment = (props) => {
             events: filteredEventsOrder,
             vehicle: filteredVehiclesOrder,
             foods: filteredFoodsOrder,
-            bookingType:bookingType
+            bookingType:props.bookingType
         };
-        props.SetBillData(booking);
+        props.SetBillData([booking]);
+        
         const bookingSuccess = await addBooking(booking);
+        
         if (!bookingSuccess) {
             throw new Error('Booking failed');
         }

@@ -1,5 +1,5 @@
 import {useState, useRef} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import useFirestorage from '../../hooks/useFirestorage';
 import {axiosPublic} from '../../app/axios';
 
@@ -16,7 +16,7 @@ const Register = () => {
 
     const avatarInputRef = useRef();
     const {uploadAvatar} = useFirestorage();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
 
@@ -131,7 +131,7 @@ const Register = () => {
             await axiosPublic.post('/api/auth/register', JSON.stringify(guest));
             toast.success('Registered Successfully');
             setLoading(false);
-            navigate('/login');
+            // navigate('/login');
         } catch (err) {
             setLoading(false);
             console.log(err);

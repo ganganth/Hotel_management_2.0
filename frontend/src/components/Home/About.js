@@ -33,7 +33,7 @@ const About = () => {
 
          <AboutDetails 
             
-            title={"Rent A vehicle!"} 
+            title={"Rent a vehicle!"} 
             text={"Renting a vehicle will provide you with the means to conveniently travel and explore your destination.Lakraj Hotel extends its hospitality beyond its luxurious accommodations by offering convenient vehicle rental services to its guests. Whether visitors wish to explore the surrounding area or simply require transportation during their stay, Lakraj Hotel ensures a hassle-free experience. With a diverse fleet of well-maintained vehicles ranging from sleek sedans to spacious SUVs, guests can choose the perfect option to suit their needs. From airport transfers to sightseeing tours, the hotel's reliable rental service ensures comfort, convenience, and peace of mind throughout their journey."}
             url1={"/images/v1.jpeg"}
             url2={"/images/v2.jpeg"}

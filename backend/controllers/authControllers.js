@@ -8,66 +8,68 @@ require('dotenv').config();
 // @access Public
 
 const register = async (req, res, next) => {
+    const { username, password, firstName, lastName, email, phone, address, street, city, gender, avatar = null } = req.body;
 
-    const {username, password, firstName, lastName, email, phone, address, street, city, gender, avatar=null} = req.body;
-   
-    if(!username || !password || !firstName || !lastName || !email || !phone || !address || !street || !city || !gender) {
-        return res.status(400).json({message: 'Invalid Inputs'});
+    if (!username || !password || !firstName || !lastName || !email || !phone || !address || !street || !city || !gender) {
+        return res.status(400).json({ message: 'Invalid Inputs' });
     }
 
+    let connection;
     try {
-        await db.beginTransaction();
+        connection = await db.getConnection();
+        await connection.beginTransaction();
 
-        const [duplicate] = await db.query("SELECT * from user WHERE username = ? ", [username]);
+        const [duplicate] = await connection.query("SELECT * FROM user WHERE username = ?", [username]);
 
-        if(duplicate.length > 0) {
-            // found a user with current username
-            return res.status(400).json({message: 'Username is already taken'});
+        if (duplicate.length > 0) {
+            await connection.rollback();
+            connection.release();
+            return res.status(400).json({ message: 'Username is already taken' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        let avatarUrl;
-        if(avatar) {
-            avatarUrl = avatar;
-        } else {
-            avatarUrl = gender === 'male' ? 'https://firebasestorage.googleapis.com/v0/b/hotelmanagement-2553b.appspot.com/o/avatars%2Fcustomer-male.png?alt=media&token=6603a5b0-9677-40ad-8769-7f1dba94913f' : 'https://firebasestorage.googleapis.com/v0/b/hotelmanagement-2553b.appspot.com/o/avatars%2Fcustomer-female.jpg?alt=media&token=7c416675-791c-4f1b-b844-d9a0c5b59191';
-        }
+        let avatarUrl = avatar ? avatar : (gender === 'male' ? 'https://firebasestorage.googleapis.com/v0/b/hotelmanagement-2553b.appspot.com/o/avatars%2Fcustomer-male.png?alt=media&token=6603a5b0-9677-40ad-8769-7f1dba94913f' : 'https://firebasestorage.googleapis.com/v0/b/hotelmanagement-2553b.appspot.com/o/avatars%2Fcustomer-female.jpg?alt=media&token=7c416675-791c-4f1b-b844-d9a0c5b59191');
 
-        const query = `INSERT INTO customer (username, password, role, firstName, lastName, address, street, city, email, phone, gender, avatar) 
+        const query = `INSERT INTO user (username, password, role, firstName, lastName, address, street, city, email, phone, gender, avatar) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-            
-        const result1 = await db.query(query, [username, hashedPassword, 'Customer', firstName, lastName, address, street, city, email, phone, gender, avatarUrl]);
 
-        const userId = result1.insertId;
+        const result1 = await connection.query(query, [username, hashedPassword, 'Customer', firstName, lastName, address, street, city, email, phone, gender, avatarUrl]);
 
-        const query1 = `INSERT INTO customer ( userId, isActive)
-                        VALUES (?,?)`;
+        const userId = result1[0].insertId;
 
-        await db.query(query1,[userId,1]);
+        const query1 = `INSERT INTO customer (userId, isActive) VALUES (?, ?)`;
+        await connection.query(query1, [userId, 1]);
 
-        res.status(201).json({message: 'Registration Success'});
+        await connection.commit();
+        connection.release();
 
-        await db.commit();
-        await db.end();
+        res.status(201).json({ message: 'Registration Success' });
 
     } catch (err) {
-        await db.rollback()
-        await db.end()
+        if (connection) {
+            await connection.rollback();
+            connection.release();
+        }
         next(err);
+    } finally {
+        if (connection) {
+            connection.release();
+        }
     }
-}
+};
+
 
 // @desc   login all types of users (Customer, Employee, Admin)
 // @route  POST /api/auth/login
 // @access Public
 
 const login = async (req, res, next) => {
-    
-    const {username, password} = req.body;
 
-    if(!username || !password) {
-        return res.status(400).json({message: 'Invalid username or password'});
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Invalid username or password' });
     }
 
     try {
@@ -76,44 +78,44 @@ const login = async (req, res, next) => {
         // query user table to find the user by the username
         const [result] = await db.query("SELECT * FROM user WHERE username = ?", [username]);
         userExist = result[0];
-      
-       if(!userExist) {
-            return res.status(404).json({message: 'Invalid username or password'});
+
+        if (!userExist) {
+            return res.status(404).json({ message: 'Invalid username or password' });
         }
 
         // check for the password
         const isMatch = await bcrypt.compare(password, userExist.password);
 
-        if(!isMatch) {
-            return res.status(404).json({message: 'Invalid username or password'});
+        if (!isMatch) {
+            return res.status(404).json({ message: 'Invalid username or password' });
         }
 
         // sign jwt token (access token)
-        const accessToken = jwt.sign({id: userExist.id, role: userExist.role}, process.env.JWT_ACCESS_TOKEN_SECRET, {expiresIn: '1d'});
+        const accessToken = jwt.sign({ id: userExist.id, role: userExist.role }, process.env.JWT_ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 
-        const refreshToken = jwt.sign({id: userExist.id, role: userExist.role}, process.env.JWT_REFRESH_TOKEN_SECRET, {expiresIn: '1d'});
+        const refreshToken = jwt.sign({ id: userExist.id, role: userExist.role }, process.env.JWT_REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
 
         // storing refresh token in a httpOnly 
         res.cookie('jwt',
-            refreshToken, 
-            {httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000}
+            refreshToken,
+            { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 }
         )
 
         // store the refresh token in the db
         await db.query("UPDATE user SET refreshToken = ? WHERE username = ?", [refreshToken, username]);
-        
+
 
         const user = {
-            id: userExist.id, 
-            role: userExist.role, 
-            username: userExist.username, 
-            firstName: userExist.firstName, 
+            id: userExist.id,
+            role: userExist.role,
+            username: userExist.username,
+            firstName: userExist.firstName,
             lastName: userExist.lastName,
             avatar: userExist.avatar
         }
-        
-        res.status(200).json({message: 'Login success', accessToken, user});
-    
+
+        res.status(200).json({ message: 'Login success', accessToken, user });
+
     } catch (err) {
         next(err);
     }
@@ -125,9 +127,9 @@ const login = async (req, res, next) => {
 
 const refresh = async (req, res, next) => {
     const cookie = req.cookies;
-    
-    if(!cookie?.jwt) {
-        return res.status(401).json({message: 'Unauthorized'});
+
+    if (!cookie?.jwt) {
+        return res.status(401).json({ message: 'Unauthorized' });
     }
 
     const refreshToken = cookie.jwt;
@@ -135,32 +137,32 @@ const refresh = async (req, res, next) => {
 
     jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET, async (err, decode) => {
 
-        if(err) return res.status(403).json({message: 'Forbidden'});
+        if (err) return res.status(403).json({ message: 'Forbidden' });
 
-        if(!decode?.id || !decode?.role) {
-            return res.status(403).json({message: 'Forbidden'});
+        if (!decode?.id || !decode?.role) {
+            return res.status(403).json({ message: 'Forbidden' });
         }
 
         let query;
-       
+
         query = "SELECT * FROM user WHERE id = ? ";
-       
+
         const [result] = await db.query(query, [decode.id]);
         const userExist = result[0];
 
         // generate a new access token and send
-        const accessToken = jwt.sign({id: decode.id, role: decode.role}, process.env.JWT_ACCESS_TOKEN_SECRET, {expiresIn: '1d'});
+        const accessToken = jwt.sign({ id: decode.id, role: decode.role }, process.env.JWT_ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 
         const user = {
-            id: userExist.id, 
-            role: userExist.role, 
-            username: userExist.username, 
-            firstName: userExist.firstName, 
+            id: userExist.id,
+            role: userExist.role,
+            username: userExist.username,
+            firstName: userExist.firstName,
             lastName: userExist.lastName,
             avatar: userExist.avatar
         }
 
-        res.status(200).json({message: 'Access token updated', accessToken, user});
+        res.status(200).json({ message: 'Access token updated', accessToken, user });
 
     });
 
@@ -171,23 +173,23 @@ const refresh = async (req, res, next) => {
 // @access Public 
 
 const logout = async (req, res, next) => {
-    
+
     try {
 
-        if(req.body.id && req.body.role) {
+        if (req.body.id && req.body.role) {
             const query = "UPDATE user SET refreshToken = null WHERE id = ? ";
             await db.query(query, [req.body.id]);
         }
-        
+
         const cookie = req.cookies;
-        
-        if(!cookie?.jwt) return res.status(204).json({message: 'Success'}); // 204 - success but no content
+
+        if (!cookie?.jwt) return res.status(204).json({ message: 'Success' }); // 204 - success but no content
 
         // remove the cookie from the response headers
-        res.clearCookie('jwt', {httpOnly: true, secure: true, sameSite: 'None'});
+        res.clearCookie('jwt', { httpOnly: true, secure: true, sameSite: 'None' });
 
-        res.status(200).json({message: 'Logout Success'});
-        
+        res.status(200).json({ message: 'Logout Success' });
+
     } catch (err) {
         next(err);
     }

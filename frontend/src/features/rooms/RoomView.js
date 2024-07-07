@@ -174,7 +174,7 @@ const RoomView = (props) => {
                                     </div>
                                 </Col>
                             </Row>
-
+{/* 
                             <Row>
                                 <Col md={12}>
                                     <div className='roomView-details-legend'>
@@ -184,7 +184,7 @@ const RoomView = (props) => {
                                         </p>
                                     </div>
                                 </Col>
-                            </Row>
+                            </Row> */}
                         </Col>
 
                         <Col md={4}>

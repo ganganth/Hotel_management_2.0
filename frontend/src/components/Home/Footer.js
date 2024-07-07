@@ -1,3 +1,4 @@
+
 import "../../styles/footer.css";
 
 
@@ -7,9 +8,9 @@ const Footer = () => {
     <div className="footer">
         <div className="footer-left">
             <img src="/img/logo.jpg" alt="" className="homeimg" style={{ borderRadius: '0px', marginBottom: '10px' }}/>
-            <p>Visit our website and place your booking. This section provides you some information about LakRaj and some links for imporatant pages.
+            <p>Visit our website and place your booking. This section provides you some information about LakRaj and some links for important pages.
             Customers can book rooms and other requirement
-            in same platform. So, this is a one stop solution for all your holyday facility needs. Just try it and you will love it.
+            in same platform. So, this is a one stop solution for all your holiday facility needs. Just try it and you will love it.
             </p>
             <h2>Follow Us</h2>
             <div className="socialmedia">

@@ -4,6 +4,7 @@ import { MdOutlineAddCircleOutline } from 'react-icons/md';
 import { addItemToCart } from '../../../app/ordersCart/orderCartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
+import moment from 'moment';
 
 const MenuMeal = (props) => {
 
@@ -75,7 +76,7 @@ const MenuMeal = (props) => {
                 reservationType: 'foods',
                 reservedDate: props.reservedDate,
                 Total_price: qty * m.price,
-                description: `This is ${props.menuName} with ${m.mealName} Added for the ${new Date(props.reservedDate)}.`
+                description: `This is ${props.menuName} with ${m.mealName} Added for the ${moment(props.reservedDate).utc().format('YYYY-MM-DD')}.`
             }
             props.setCreateFoodOrder(true);
             dispatch(addItemToCart(f));

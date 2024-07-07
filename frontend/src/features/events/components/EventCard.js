@@ -4,6 +4,7 @@ import { Card, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { addItemToCart } from '../../../app/ordersCart/orderCartSlice';
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate';
+import moment from 'moment';
 
 const EventCard = (props) => {
 
@@ -84,7 +85,7 @@ const EventCard = (props) => {
                 reservationType: 'events',
                 Total_price: qty * props.event.price,
                 reservedDate: props.reservedDate,
-                description: `This is ${props.event.name} with ${totalPeople} peoples Added for the ${new Date(props.reservedDate)}.`
+                description: `This is ${props.event.name} with ${totalPeople} peoples Added for the ${moment(props.reservedDate).utc().format('YYYY-MM-DD')}.`
             }
             dispatch(addItemToCart(e));
             toast.success(`${props.event.name} added to the cart`);

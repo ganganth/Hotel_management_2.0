@@ -26,6 +26,7 @@ const CustomerCart = () => {
     const [eventT, setEventT] = useState(0);
     const [vehicleT, setVehicleT] = useState(0);
     const [total, setTotal] = useState(0);
+    const [totalAmount, setTotalAmount] = useState(0);
     const [discount, setDiscount] = useState(0);
     const [tax, setTax] = useState(0);
     const [taxRate, setTaxRate] = useState();
@@ -35,6 +36,7 @@ const CustomerCart = () => {
     const [ratePopup, setRatePopup] = useState(false);
     const [billData, SetBillData] = useState([]);
     const [billPrint, setBillPrint] = useState(false)
+    const [bookingType, setBookingType] = useState('');
 
     useEffect(() => {
         const getTaxRates = async () => {
@@ -66,6 +68,7 @@ const CustomerCart = () => {
         const Discount = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice) * discountRate;
         const GovernmentTax = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice) * taxRate;
         const Total = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice + GovernmentTax) - Discount
+        const totalAmount = (TotalRoomPrice + TotalFoodPrice + TotalEventPrice + TotalVehiclePrice)
 
         setRoomsOrder(roomsOrder);
         setFoodsOrder(foodsOrder);
@@ -79,6 +82,25 @@ const CustomerCart = () => {
         setTotal(Total)
         setDiscount(Discount)
         setTax(GovernmentTax)
+        setTotalAmount(totalAmount)
+
+        if(vehiclesOrder.length > 0 && eventsOrder.length > 0 && foodsOrder.length > 0 && roomsOrder.length > 0){
+            setBookingType('A');
+        }else if (vehiclesOrder.length === 0 && eventsOrder.length === 0 && foodsOrder.length === 0 && roomsOrder.length > 0){
+            setBookingType('R');
+        }else if (vehiclesOrder.length === 0 && eventsOrder.length === 0 && foodsOrder.length > 0 && roomsOrder.length > 0){
+            setBookingType('RF')
+        }else if (vehiclesOrder.length === 0 && eventsOrder.length > 0 && foodsOrder.length === 0 && roomsOrder.length > 0){
+            setBookingType('RE')
+        }else if (vehiclesOrder.length > 0 && eventsOrder.length === 0 && foodsOrder.length === 0 && roomsOrder.length > 0){
+            setBookingType('RV')
+        }else if (vehiclesOrder.length === 0 && eventsOrder.length > 0 && foodsOrder.length > 0 && roomsOrder.length > 0){
+            setBookingType('REF')
+        }else if (vehiclesOrder.length > 0 && eventsOrder.length === 0 && foodsOrder.length > 0 && roomsOrder.length > 0){
+            setBookingType('RFV')
+        }else if (vehiclesOrder.length > 0 && eventsOrder.length > 0 && foodsOrder.length === 0 && roomsOrder.length > 0){
+            setBookingType('RVE')
+        }
 
     }, [items,taxRate,discountRate]);
 
@@ -118,6 +140,7 @@ const CustomerCart = () => {
                     tax={tax}
                     SetBillData={SetBillData}
                     setBillPrint={setBillPrint}
+                    bookingType = {bookingType}
                 />
             ) : billPrint ? (
                 <Ebill
@@ -199,6 +222,10 @@ const CustomerCart = () => {
                                             <tr>
                                                 <td>Total for other events</td>
                                                 <td>$ {eventT.toFixed(2)}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sub Total</td>
+                                                <td>$ {totalAmount.toFixed(2)}</td>
                                             </tr>
                                             <tr>
                                                 <td>Government  Tax</td>

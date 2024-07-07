@@ -1,5 +1,6 @@
 import { AiFillDelete } from "react-icons/ai";
 
+
 const CustomerCartCard = (props) => {
     return (
         <div className="card shadow-none" style={{ width: "90%", marginLeft: "5%" }}>
