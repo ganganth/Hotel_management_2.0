@@ -16,7 +16,7 @@ const createNewMenu = async (req, res, next) => {
 
             // create meals with reference to the menu & category
             const mealsPromises = meals.map(m => {
-                return db.query("INSERT INTO menu_category_meal(menuId, categoryId, mealName, price) VALUES(?, ?, ?, ?)", [menuId, cat.insertId, m.name, m.price]);
+                return db.query("INSERT INTO menu_category_meal(menuId, categoryId, mealName, price, maxCountPerDay) VALUES(?, ?, ?, ?,?)", [menuId, cat.insertId, m.name, m.price, m.maxCount]);
             })
 
             await Promise.all(mealsPromises);
@@ -32,7 +32,7 @@ const createNewMenu = async (req, res, next) => {
                 const catId = result[i][0].insertId;
 
                 const mealsPromises = catMeals.map(m => {
-                    return db.query("INSERT INTO menu_category_meal(menuId, categoryId, mealName, price) VALUES(?, ?, ?, ?)", [menuId, catId, m.name, m.price]);
+                    return db.query("INSERT INTO menu_category_meal(menuId, categoryId, mealName, price, maxCountPerDay) VALUES(?, ?, ?, ?, ?)", [menuId, catId, m.name, m.price, m.maxCount]);
                 })
 
                 await Promise.all(mealsPromises);

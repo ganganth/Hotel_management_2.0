@@ -16,13 +16,14 @@ const VehicleRental = (props) => {
     const [loading, setLoading] = useState(true);
     const [popup, setPopup] = useState(false);
     const [pickUp, setPickup] = useState(true);
+    const [pickUpLocation, setPickupLocation] = useState('NULL');
     const [pickupPolicy, setPickUpPolicy] = useState('');
     const dispatch = useDispatch();
     const { items } = useSelector(state => state.orderCart);
     const [vehiclesPD, setVehiclesPD] = useState([]);
     const pickupCharge =100;
     const role = useSelector(selectAuthUser);
-   console.log("dcbdfvchjd",role)
+   
     useEffect(() => {
         const getAllVehicleData = async () => {
             try {
@@ -62,7 +63,8 @@ const VehicleRental = (props) => {
                 Total_price: ((v.fuelPolicy === 'full-to-empty' || v.fuelPolicy === 'none') ? (v.price -(v.price*v.discount/100)) : pickUp ? (((v.price -(v.price*v.discount/100)) * props.total_days) + pickupCharge) : ((v.price -(v.price*v.discount/100)) * props.total_days)) ,
                 description: `This is ${v.name} with brand ${v.brand} vehicle.`,
                 fuelPolicy: v.fuelPolicy,
-                pickupPolicy: v.pickupPolicy
+                pickupPolicy: v.pickupPolicy,
+                pickUpLocation: pickUpLocation
             }
 
             dispatch(addItemToCart(r));
@@ -109,9 +111,6 @@ const VehicleRental = (props) => {
 
                 {!loading && vehicles.length > 0 && (
                     <>
-
-
-
                         <Row className='my-5'>
                             <Col md={12}>
                                 {vehicles.map(v => <VehicleCard key={v.id} vehicle={v} isEditable={false} isRentalBtnVisible={true} handleVehiclePopup={handleVehiclePopup} role={role.role} />)
@@ -134,6 +133,7 @@ const VehicleRental = (props) => {
                 pickupPolicy={pickupPolicy}
                 vehicleRentFunc={vehicleRentFunc}
                 vehiclesPD={vehiclesPD}
+                setPickupLocation = {setPickupLocation}
             />
         </>
     );

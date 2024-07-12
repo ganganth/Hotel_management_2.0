@@ -123,9 +123,13 @@ const OrderManagement = () => {
                                             <th>Total People</th>
                                         )}
                                         {allBookingType[0].bookingType !== 'event'  && (
-                                            <th>quantity</th>
+                                            <th>Quantity</th>
                                         )}
-
+                                         {allBookingType[0].bookingType === 'vehicle' && (
+                                            <>
+                                                <th>PickUp Location</th>
+                                            </>
+                                        )}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -151,6 +155,9 @@ const OrderManagement = () => {
                                                 <td>{moment(booking.reserveDate).utc().format('YYYY-MM-DD')}</td>
                                             )}
                                             <td>{booking.booking_quantity}</td>
+                                            {booking.bookingType === 'vehicle' && (
+                                                <td>{booking.pickUpLocation}</td> 
+                                            )}
                                         </tr>
                                     ))}
                                 </tbody>

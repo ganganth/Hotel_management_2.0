@@ -94,17 +94,22 @@ const updateProfile = async (req, res, next) => {
         }
     } else {
         if(password) {
-            query = `UPDATE employee SET 
+            query = `UPDATE user SET 
                 username = ?, password = ?, role = ?, firstName = ?, lastName = ?, address = ?, street = ?, city = ?,
-                age = ?, email = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?
+                email = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?
             `;
             params = [username, hashedPassword, role, firstName, lastName, address, street, city, age, email, gender, avatar, phone, req.user.id];
+
+            query = `UPDATE employee SET age = ? WHERE userId = ?`;
+            params = [age,req.user.id];
         } else {
-            query = `UPDATE e SET 
-                U.username = ?, U.role = ?, U.firstName = ?, U.lastName = ?, U.address = ?, U.street = ?, U.city = ?,
-                e.age = ?, U.email = ?, U.gender = ?, U.avatar = ?, e.phone = ? FROM USER AS U INNER JOIN employee e ON U.id = e.userId U.WHERE id = ?
-            `;
-            params = [username, role, firstName, lastName, address, street, city, age, email, gender, avatar, phone, req.user.id];
+            query = `UPDATE user SET 
+                username = ?, role = ?, firstName = ?, lastName = ?, address = ?, street = ?, city = ?,
+                email = ?, gender = ?, avatar = ?, phone = ? WHERE id = ?`;
+            params = [username, role, firstName, lastName, address, street, city, email, gender, avatar, phone, req.user.id];
+
+            query = `UPDATE employee SET age = ? WHERE userId = ?`;
+            params = [age,req.user.id];
         }
     }
 

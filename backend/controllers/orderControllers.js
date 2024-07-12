@@ -3,7 +3,7 @@ const formatDateForMySQL = require('../config/formatDate');
 
 const getAllOrderDetails = async (req, res, next) => {
     try {
-        const [result] = await db.query("SELECT * FROM booking ORDER BY id DESC");
+        const [result] = await db.query("SELECT * FROM booking ORDER BY id DESC LIMIT 10");
 
         if (result.length <= 0) return res.status(404).json({ message: 'Booking not found' });
 
@@ -69,22 +69,22 @@ const getFilterOrderDetailsType = async (req, res, next) => {
 
         if (reservationType == 1) {
 
-            [result] = await db.query("SELECT p.bookingType, b.paymentType, p.quantity  AS booking_quantity, r.*, p.price As booking_price, b.checkInDate, b.checkOutDate FROM place_booking p INNER JOIN room_type r ON r.id = p.roomId INNER JOIN booking b ON b.id = p.bookingId  WHERE b.CheckInDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'room']);
+            [result] = await db.query("SELECT p.pickUpLocation, p.bookingType, b.paymentType, p.quantity  AS booking_quantity, r.*, p.price As booking_price, b.checkInDate, b.checkOutDate FROM place_booking p INNER JOIN room_type r ON r.id = p.roomId INNER JOIN booking b ON b.id = p.bookingId  WHERE b.CheckInDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'room']);
             title = `${formatDateForMySQL(date)} Reserve Rooms Details`
 
         } else if (reservationType == 2) {
 
-            [result] = await db.query("SELECT p.bookingType, p.quantity  AS booking_quantity, p.reserveDate, r.*, p.price As booking_price FROM place_booking p INNER JOIN event r ON r.id = p.eventId WHERE p.reserveDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'event']);
+            [result] = await db.query("SELECT p.pickUpLocation, p.bookingType, p.quantity  AS booking_quantity, p.reserveDate, r.*, p.price As booking_price FROM place_booking p INNER JOIN event r ON r.id = p.eventId WHERE p.reserveDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'event']);
             title = `${formatDateForMySQL(date)} Reserve Events Details`
 
         } else if (reservationType == 3) {
 
-            [result] = await db.query("SELECT p.bookingType, m.name, mc.categoryName, p.quantity AS booking_quantity, p.reserveDate, r.*, p.price As booking_price FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId INNER JOIN menu m ON m.id = r.menuId INNER JOIN menu_category mc ON mc.id = r.categoryId WHERE p.reserveDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'food']);
+            [result] = await db.query("SELECT p.pickUpLocation, p.bookingType, m.name, mc.categoryName, p.quantity AS booking_quantity, p.reserveDate, r.*, p.price As booking_price FROM place_booking p INNER JOIN menu_category_meal r ON r.id = p.foodId INNER JOIN menu m ON m.id = r.menuId INNER JOIN menu_category mc ON mc.id = r.categoryId WHERE p.reserveDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'food']);
             title = `${formatDateForMySQL(date)} Reserve Foods Details`
 
         } else if (reservationType == 4) {
 
-            [result] = await db.query("SELECT p.bookingType, p.quantity  AS booking_quantity, r.*, p.price As booking_price  FROM place_booking p INNER JOIN vehicle r ON r.id = p.vehicleId INNER JOIN booking b ON b.id = p.bookingId WHERE b.CheckInDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'vehicle']);
+            [result] = await db.query("SELECT p.pickUpLocation, p.bookingType, p.quantity  AS booking_quantity, r.*, p.price As booking_price  FROM place_booking p INNER JOIN vehicle r ON r.id = p.vehicleId INNER JOIN booking b ON b.id = p.bookingId WHERE b.CheckInDate = ? AND p.bookingType =  ?", [formatDateForMySQL(date), 'vehicle']);
             title = `${formatDateForMySQL(date)} Reserve Vehicles Details`
 
         }

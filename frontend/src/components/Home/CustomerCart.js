@@ -145,8 +145,6 @@ const CustomerCart = () => {
             ) : billPrint ? (
                 <Ebill
                     billData={billData}
-                    discount={discount}
-                    tax={tax}
                     billPrint={billPrint}
                     setBillPrint={setBillPrint}
                 />

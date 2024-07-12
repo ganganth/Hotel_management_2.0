@@ -73,6 +73,7 @@ const Welcome = () => {
 
     const handleeventFunc = async () => {
         try {
+            setChart2([]);
             const response = await axiosPrivate.get(`/api/order/eventWithDate?date=${date}`);
             setChart2(response.data.booking);
         } catch (err) {
@@ -90,7 +91,7 @@ const Welcome = () => {
     }
 
     return (
-        <div className="container d-flex">
+        <div className="d-flex position-fixed" >
 
             <div className='col-8'>
 

@@ -241,33 +241,33 @@ const createNewBooking = async (req, res, next) => {
         // Insert rooms
         for (const r of rooms) {
             await connection.query(`
-                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `, [bookingId, r.id, 1, 1, 1, r.total_quantity, r.total_price, 'room', null]);
+                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate, pickUpLocation) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [bookingId, r.id, 1, 1, 1, r.total_quantity, r.total_price, 'room', null, null]);
         }
 
         // Insert events
         for (const e of events) {
             await connection.query(`
-                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `, [bookingId, 1, 1, e.id, 1, e.total_quantity, e.total_price, 'event', formatDateForMySQL(e.reserveDate)]);                                                                                            
+                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate, pickUpLocation) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [bookingId, 1, 1, e.id, 1, e.total_quantity, e.total_price, 'event', formatDateForMySQL(e.reserveDate), null]);                                                                                            
         }
 
         // Insert vehicles
         for (const v of vehicle) {
             await connection.query(`
-                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `, [bookingId, 1, v.id, 1, 1, v.total_quantity, v.total_price, 'vehicle', null]);
+                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate, pickUpLocation) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [bookingId, 1, v.id, 1, 1, v.total_quantity, v.total_price, 'vehicle', null, v.pickUpLocation]);
         }
 
         // Insert foods
         for (const f of foods) {
             await connection.query(`
-                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `, [bookingId, 1, 1, 1, f.id, f.total_quantity, f.total_price, 'food', formatDateForMySQL(f.reserveDate)]);
+                INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate, pickUpLocation) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [bookingId, 1, 1, 1, f.id, f.total_quantity, f.total_price, 'food', formatDateForMySQL(f.reserveDate), pickUpLocation]);
         }
 
         // Commit the transaction

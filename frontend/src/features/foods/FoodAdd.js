@@ -25,6 +25,7 @@ const FoodAdd = () => {
     const [meals, setMeals] = useState([]);
     const [mealName, setMealName] = useState('');
     const [mealPrice, setMealPrice] = useState(1);
+    const [maxCount, setMaxCount] =useState(1);
     const [mealCategory, setMealCategory] = useState(categories.length === 0 ? '' : categories[0]);
 
 
@@ -85,7 +86,7 @@ const FoodAdd = () => {
     }
 
     const handleAddMeal = () => {
-        if(!mealName.trim() || !mealPrice) return;
+        if(!mealName.trim() || !mealPrice || !maxCount) return;
 
         // check wether the meal already added with the same category
         const found = meals.find(m => m.name.trim().toLowerCase() === mealName.trim().toLowerCase() && m.category.trim().toLowerCase() === mealCategory.trim().toLowerCase());
@@ -99,7 +100,8 @@ const FoodAdd = () => {
         const newMeal = {
             name: mealName.trim(),
             price: +mealPrice,
-            category: !mealCategory ? '' : mealCategory.trim()
+            category: !mealCategory ? '' : mealCategory.trim(),
+            maxCount: maxCount
         }
 
         setMeals(prev => [...prev, newMeal]);
@@ -288,6 +290,10 @@ const FoodAdd = () => {
                         <input type='number' min="1" step=".01" value={mealPrice.toString()} onChange={e => setMealPrice(+e.target.value)} />
                     </div>
                     <div className='form-group'>
+                        <label className='form-label'>Max quantity per day</label>
+                        <input type='number' min="1" step="1" value={maxCount.toString()} onChange={e => setMaxCount(+e.target.value)} />
+                    </div>
+                    <div className='form-group'>
                         <label className='form-label'>Select meal category</label>
                         {categories.length === 0 ? (
                             <select disabled defaultChecked={mealCategory}>
@@ -300,7 +306,7 @@ const FoodAdd = () => {
                         )}
                     </div>
                     <div className='form-group' style={{alignSelf: 'flex-end'}}>
-                        <button className='btn btn-primary d-flex align-items-center gap-2' disabled={!mealName.trim() || !mealPrice || (categories.length > 0 && !mealCategory)} onClick={handleAddMeal} ><MdAddCircle />Add meal to the menu</button>
+                        <button className='btn btn-primary d-flex align-items-center gap-2' disabled={!mealName.trim() || !mealPrice || (categories.length > 0 && !mealCategory)} onClick={handleAddMeal} ><MdAddCircle />Add meal</button>
                     </div>
                 </div>
             </div>

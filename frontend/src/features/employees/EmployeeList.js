@@ -80,7 +80,7 @@ const EmployeeList = () => {
                                 <th>Age</th>
                                 <th>Salary</th>
                                 <th>Role</th>
-                                <th>Actions</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -106,7 +106,7 @@ const EmployeeList = () => {
                                     <td><p className='d-flex align-items-center justify-content-center' style={{width: 'max-content'}}><span className={`employee-state-tagger ${e.role === 'Admin' ? 'employee-state-tagger-admin' : 'employee-state-tagger-employee'}`}>{e.role}</span></p></td>
                                     <td>
                                         <div className='d-flex align-items-center gap-2'>
-                                            <button className='btn btn-sm btn-success' onClick={() => navigate(`/dash/admin/employee-management/add?edit=true&id=${e.id}`)}>Update</button>
+                                            {/* <button className='btn btn-sm btn-success' onClick={() => navigate(`/dash/admin/employee-management/add?edit=true&id=${e.id}`)}>Update</button> */}
                                             <button className='btn btn-sm btn-danger' onClick={() => handleEmployeeDelete(e.id)}>Delete</button>
                                         </div>
                                     </td>

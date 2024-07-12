@@ -31,8 +31,8 @@ const VehiclePopUp = (props) => {
                     {(props.pickupPolicy === 'delivery' || props.pickUp) && (
                         <>
                             <p className='text-left mt-2'>Pick Up location : </p>
-                            <select id='type' className='mx-5 rounded'>
-                                <option value='cColombo Air port'>Colombo Air port</option>
+                            <select id='type' className='mx-5 rounded' value={props.pickUpLocation} onChange={e => props.setPickUpLocation(e.target.value)}>
+                                <option value='Colombo Air port'>Colombo Air port</option>
                                 <option value='Colombo'>Colombo</option>
                                 <option value='Kandy'>Kandy</option>
                                 <option value='Other place'>Other Place</option>

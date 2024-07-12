@@ -25,7 +25,8 @@ const Payment = (props) => {
                 reservationType: item.reservationType,
                 total_quantity: item.quantity,
                 total_price: item.Total_price,
-                reserveDate: item.reservedDate
+                reserveDate: item.reservedDate,
+                pickUpLocation: 'BULL'
             }));
             setFilteredRoomsOrder(filteredArray);
         }
@@ -38,7 +39,8 @@ const Payment = (props) => {
                 reservationType: item.reservationType,
                 total_quantity: item.quantity,
                 total_price: item.Total_price,
-                reserveDate: item.reservedDate
+                reserveDate: item.reservedDate,
+                pickUpLocation: 'NULL'
             }));
             setFilteredFoodsOrder(filteredArray);
         }
@@ -51,7 +53,8 @@ const Payment = (props) => {
                 reservationType: item.reservationType,
                 total_quantity: item.people,
                 total_price: item.Total_price,
-                reserveDate: item.reservedDate
+                reserveDate: item.reservedDate,
+                pickUpLocation: 'NULL'
             }));
             setFilteredEventsOrder(filteredArray);
         }
@@ -64,7 +67,8 @@ const Payment = (props) => {
                 reservationType: item.reservationType,
                 total_quantity: item.quantity,
                 total_price: item.Total_price,
-                reserveDate: 'NULL'
+                reserveDate: 'NULL',
+                pickUpLocation: item.pickUpLocation
             }));
             setFilteredVehiclesOrder(filteredArray);
         }
@@ -118,7 +122,9 @@ const Payment = (props) => {
             events: filteredEventsOrder,
             vehicle: filteredVehiclesOrder,
             foods: filteredFoodsOrder,
-            bookingType:props.bookingType
+            bookingType:props.bookingType,
+            tax:props.tax,
+            discount:props.discount
         };
         props.SetBillData([booking]);
         
