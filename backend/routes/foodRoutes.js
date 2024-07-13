@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const {auth, isEmployee} = require('../middleware/auth');
+const { auth, isEmployee } = require('../middleware/auth');
 
 router.use(auth);
 
-const {createNewMenu, getAllMenus, deleteMenu, getSingleMenu, updateSingleMeal, getSingleMenuUser, createNewOrder, getPopularCategories, getAllOrdersOfACustomer, getAllFoodOrders, getSingleOrderDetails,deleteCorder,getSelectedMenus,getAvailableFoodCount} = require('../controllers/foodControllers');
+const { createNewMenu, getAllMenus, deleteMenu, getSingleMenu, updateSingleMeal, getSingleMenuUser, createNewOrder, getPopularCategories, getAllOrdersOfACustomer, getAllFoodOrders, getSingleOrderDetails, deleteCorder, getSelectedMenus, getAvailableFoodCount, getAllCategory, getFoodDetails,updateFoodDetails,deleteFoodDetails } = require('../controllers/foodControllers');
 
 router.route('/')
     .get(getAllMenus)
@@ -42,5 +42,17 @@ router.route('/meal/update')
 
 router.route('/booking/foodItemOrder')
     .get(getAvailableFoodCount)
+
+router.route('/foodCreate/allCategory')
+    .get(getAllCategory)
+
+router.route('/foodDetails/updateDetails')
+    .get(getFoodDetails)
+
+router.route('/foodDetails/updateFood')
+    .put(updateFoodDetails)
+
+router.route('/foodDetails/deleteFood')
+    .delete(deleteFoodDetails)
 
 module.exports = router;

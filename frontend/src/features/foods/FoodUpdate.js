@@ -1,12 +1,13 @@
-import {useState, useEffect} from 'react';
-import {useNavigate, useSearchParams} from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
-
-import {Spinner, Badge, Table} from 'react-bootstrap';
-
-import MenuMealRow from './components/MenuMealRow';
-
-import {MdSort} from 'react-icons/md';
+import { Spinner, Badge, Table } from 'react-bootstrap';
+import { MdFastfood, MdEditOff,MdDeleteForever } from 'react-icons/md';
+import { MdSort } from 'react-icons/md';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+import '../../styles/popupDefault.css'
+import { toast } from 'react-toastify';
 
 const FoodUpdate = () => {
 
@@ -14,17 +15,14 @@ const FoodUpdate = () => {
     const [searchParams] = useSearchParams();
     const axiosPrivate = useAxiosPrivate();
     const id = searchParams.get('id');
-
     const [loading, setLoading] = useState(true);
-
     const [menu, setMenu] = useState({});
     const [name, setName] = useState('');
     const [categories, setCategories] = useState([]);
     const [meals, setMeals] = useState([]);
-
-    // const [mealName, setMealName] = useState('');
-    // const [mealPrice, setMealPrice] = useState(1);
-    // const [mealCategory, setMealCategory] = useState('');
+    const [updatePrice, setUpdatePrice] = useState(1);
+    const [updateQuantity, setUpdateQuantity] = useState(1);
+    const [refresh, setRefresh] = useState(true)
 
     useEffect(() => {
         const getSingleMenu = async () => {
@@ -33,14 +31,13 @@ const FoodUpdate = () => {
                 const menu = response.data.menu;
                 setMenu(menu);
                 setName(menu.name);
-                setCategories(menu.categories.map(c => ({id: c.id, name: c.categoryName})));
+                setCategories(menu.categories.map(c => ({ id: c.id, name: c.categoryName })));
                 let meals = [];
-                for(let key in menu.meals) {
-                    const catMeals = menu.meals[key].map(m => ({catId: m.categoryId, category: key, name: m.mealName, price: m.price}));
+                for (let key in menu.meals) {
+                    const catMeals = menu.meals[key].map(m => ({ catId: m.categoryId, category: key, name: m.mealName, price: m.price,id:m.id }));
                     meals = [...meals, ...catMeals]
                 }
                 setMeals(meals);
-                // setMealCategory(menu.categories[0].id);
                 setLoading(false);
             } catch (err) {
                 console.log(err.response.data?.message);
@@ -49,23 +46,55 @@ const FoodUpdate = () => {
             }
         }
         getSingleMenu();
-    }, [navigate, axiosPrivate, id])
+    }, [navigate, axiosPrivate, id, refresh])
 
     const handleMealSort = () => {
-        
+
         const sortedMeals = meals.sort(function (a, b) {
             if (a.category < b.category) {
-              return -1;
+                return -1;
             }
             if (a.category > b.category) {
-              return 1;
+                return 1;
             }
             return 0;
         });
-        
+
         setMeals([...sortedMeals])
     }
 
+    const handleFoodDelete = async (id, name) => {
+        try {
+            await axiosPrivate.delete(`/api/foods/foodDetails/deleteFood?id=${id}`);
+            toast.success(`${name} Successfully deleted`);
+            setRefresh(!refresh);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const handleFoodUpdate = async (id, name) => {
+        try {
+            const price = updatePrice < 0 ? 0 : updatePrice;
+            const quantity = updateQuantity < 0 ? 0 : updateQuantity;
+            await axiosPrivate.put(`/api/foods/foodDetails/updateFood?id=${id}&price=${price}&quantity=${quantity}`);
+            toast.success(`${name} Successfully updated`);
+            setRefresh(!refresh);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const getUpdateDetails = async (id) => {
+        try {
+            const response = await axiosPrivate.get(`/api/foods/foodDetails/updateDetails?id=${id}`);
+            setUpdatePrice(response.data.details[0].price);
+            setUpdateQuantity(response.data.details[0].quantity)
+        } catch (err) {
+            console.log(err);
+        }
+
+    }
 
     return (
         loading ? (
@@ -76,8 +105,8 @@ const FoodUpdate = () => {
                     size="xl"
                     role="status"
                     aria-hidden="true"
-                    
-                    style={{marginTop: '300px'}}
+
+                    style={{ marginTop: '300px' }}
                 />
                 <small>loading...</small>
             </div>
@@ -105,7 +134,7 @@ const FoodUpdate = () => {
 
                 {categories.length > 0 && categories[0].name !== 'no-category' && (
                     <>
-                        <label className='mb-2 text-muted' style={{fontSize: '14px'}}>Categories</label>
+                        <label className='mb-2 text-muted' style={{ fontSize: '14px' }}>Categories</label>
                         <div className='mb-4 p-3 shadow d-flex align-items-center gap-3'>
                             {/* <button className='border-0 bg-transparent text-white' ><MdCancel fontSize={18} /></button> */}
                             {categories.map(c => (
@@ -115,42 +144,10 @@ const FoodUpdate = () => {
                     </>
                 )}
 
-                {/* ADD MEALS */}
-
-                {/* <div className='mb-5'>
-                    <label className='mb-2 text-muted' style={{fontSize: '14px'}}>Add new meal</label>
-                    <div className='p-3 shadow rounded d-flex align-items-center gap-4'>
-                        <div className='form-group'>
-                            <label className='form-label'>Meal Name</label>
-                            <input type='text' value={mealName} onChange={e => setMealName(e.target.value)} />
-                        </div>
-                        <div className='form-group'>
-                            <label className='form-label'>Price (USD 1 qty )</label>
-                            <input type='number' min="1" step=".01" value={mealPrice.toString()} onChange={e => setMealPrice(+e.target.value)} />
-                        </div>
-                        <div className='form-group'>
-                            <label className='form-label'>Select meal category</label>
-                            {categories.length === 0 ? (
-                                <select disabled defaultChecked={mealCategory}>
-                                    <option>No categories added</option>
-                                </select>
-                            ) : (
-                                <select onChange={e => setMealCategory(+e.target.value)} >
-                                    {categories.map(c => <option key={c.id} value={c.id} >{c.name}</option>)}
-                                </select>
-                            )}
-                        </div>
-                        <div className='form-group' style={{alignSelf: 'flex-end'}}>
-                            <button className='btn btn-primary d-flex align-items-center gap-2' disabled={!mealName.trim() || !mealPrice || (categories.length > 0 && !mealCategory)} ><MdAddCircle />Add meal to the menu</button>
-                        </div>
-                    </div>
-                </div> */}
-
-
-                {/* DISPLAY ADDED MEALS */}
                 {meals.length > 0 && (
                     <>
-                        <p className='m-0 my-3 d-flex align-items-center justify-content-between' style={{fontWeight: 500}}>Meals Details <button className='btn btn-sm btn-secondary d-flex align-items-center gap-2' onClick={handleMealSort} >sort by category <MdSort fontSize={20} /></button></p>
+                        <button className='btn btn-primary d-flex align-items-center gap-2' onClick={() => navigate(`/dash/employee/food-management/add?id=${menu.id}&MenuName=${name}`)} style={{ marginLeft: "83%" }}><MdFastfood /> Add New Food item</button>
+                        <p className='m-0 my-3 d-flex align-items-center justify-content-between' style={{ fontWeight: 500 }}>Meals Details <button className='btn btn-sm btn-secondary d-flex align-items-center gap-2' onClick={handleMealSort} >sort by category <MdSort fontSize={20} /></button></p>
                         <hr></hr>
                         <Table hover>
                             <thead>
@@ -158,12 +155,102 @@ const FoodUpdate = () => {
                                     <th>Meal</th>
                                     <th>Price (USD 1 quantity)</th>
                                     <th>Category</th>
-                                    <th>Actions</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {meals.map(m => (
-                                    <MenuMealRow key={`${m.category}-${m.name}`} meal={m} menuId={menu.id} setMeals={setMeals} />
+
+                                    <tr>
+                                        <td>
+                                            {m.name}
+                                        </td>
+                                        <td>
+                                            <p>${m.price}</p>
+                                        </td>
+                                        <td>
+                                            {m.category === 'no-category' ? 'No Category' : m.category}
+                                        </td>
+                                        <td>
+                                            <Popup
+                                                trigger={<button className='btn border-0'><MdEditOff size={25} /></button>}
+                                                modal
+                                                onOpen={() => getUpdateDetails(m.id)}
+                                            >
+                                                {close => (
+                                                    <div className="modal" style={{ display: "contents" }}>
+                                                        <button className="close" onClick={close}>
+                                                            &times;
+                                                        </button>
+                                                        <div className="header"> Update {m.name} Food Details</div>
+                                                        {(updatePrice && updateQuantity) && (
+                                                            <div className="content">
+                                                                <label htmlFor="">Price</label>
+                                                                <input
+                                                                    type='number'
+                                                                    step='1'
+                                                                    min='0'
+                                                                    className="form-control"
+                                                                    value={updatePrice}
+                                                                    onChange={e => setUpdatePrice(e.target.value)}
+                                                                />
+                                                                <label htmlFor="">Quantity</label>
+                                                                <input
+                                                                    type='number'
+                                                                    step='1'
+                                                                    min='0'
+                                                                    className="form-control"
+                                                                    value={updateQuantity}
+                                                                    onChange={e => setUpdateQuantity(e.target.value)}
+                                                                />
+                                                            </div>
+                                                        )}
+
+                                                        <div className="actions" >
+                                                            <button className='btn btn-success' onClick={() => handleFoodUpdate(m.id, m.name)}>Update</button>
+                                                            <button
+                                                                className="btn btn-danger"
+                                                                onClick={() => {
+                                                                    console.log('modal closed ');
+                                                                    close();
+                                                                }}
+                                                                style={{ marginLeft: "2px" }}
+                                                            >
+                                                                cancel
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </Popup>
+
+                                            <Popup
+                                                trigger={<button className='btn border-0 text-danger' ><MdDeleteForever size={25} /></button>}
+                                                modal
+                                            >
+                                                {close => (
+                                                    <div className="modal" style={{ display: "contents" }}>
+                                                        <button className="close" onClick={close}>
+                                                            &times;
+                                                        </button>
+                                                        <div className="header">Are you sure you want to delete {m.name} Food?</div>
+                                                        <div className="actions" >
+                                                            <button className='btn btn-success' onClick={() => handleFoodDelete(m.id, m.name)}>Delete</button>
+                                                            <button
+                                                                className="btn btn-danger"
+                                                                onClick={() => {
+                                                                    console.log('modal closed ');
+                                                                    close();
+                                                                }}
+                                                                style={{ marginLeft: "2px" }}
+                                                            >
+                                                                cancel
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </Popup>
+                                        </td>
+                                    </tr>
                                 ))}
                             </tbody>
                         </Table>

@@ -44,4 +44,5 @@ router.route('/eventDetails/updateEvent')
 
 router.route('/eventsDetails/deleteEvent')
     .delete(deleteEventDetails)
+    
 module.exports = router;

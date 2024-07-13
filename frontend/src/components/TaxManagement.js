@@ -25,7 +25,8 @@ const TaxManagement = () => {
     const handleUpdate = async (id, description) => {
         try {
             const detail = details.find(d => d.id === id);
-            await axiosPrivate.put(`/api/order/taxUpdate?id=${id}&rate=${detail.rate}`);
+            const rate = detail.rate < 0 ? 0 : detail.rate;
+            await axiosPrivate.put(`/api/order/taxUpdate?id=${id}&rate=${rate}`);
             toast.success(`${description} Successfully updated`);
         } catch (err) {
             console.log(err);

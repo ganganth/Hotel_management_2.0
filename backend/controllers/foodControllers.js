@@ -2,44 +2,17 @@ const db = require('../config/db');
 
 const createNewMenu = async (req, res, next) => {
 
-    const { name, url, categories, meals } = req.body;
+    const { menuName, categoryName, mealName, price, quantity } = req.body;
 
-    if (!name || !url || meals.length <= 0) return res.status(400).json({ message: 'Invalid input data' });
+    if (!menuName || !categoryName || !mealName || !price || !quantity) return res.status(400).json({ message: 'Invalid input data' });
 
     try {
-        const [menu] = await db.query("INSERT INTO menu(name, image) VALUES (?, ?)", [name, url]);
-        const menuId = menu.insertId;
+  
+    const [result] = await db.query("SELECT id,menuId FROM menu_category WHERE categoryName = ?",[categoryName])
+    const menuId = result[0].menuId;
+    const catId = result[0].id;
 
-        // create categories
-        if (!categories && !Array.isArray(categories)) {
-            const [cat] = await db.query("INSERT INTO menu_category(menuId, categoryName) VALUES(?, ?)", [menuId, 'no-category']);
-
-            // create meals with reference to the menu & category
-            const mealsPromises = meals.map(m => {
-                return db.query("INSERT INTO menu_category_meal(menuId, categoryId, mealName, price, maxCountPerDay) VALUES(?, ?, ?, ?,?)", [menuId, cat.insertId, m.name, m.price, m.maxCount]);
-            })
-
-            await Promise.all(mealsPromises);
-            return res.status(201).json({ message: 'Menu Created' });
-        }
-
-        if (categories.length > 0) {
-            const catPromises = categories.map(c => db.query("INSERT INTO menu_category(menuId, categoryName) VALUES(?, ?)", [menuId, c]));
-            const result = await Promise.all(catPromises);
-
-            categories.forEach(async (c, i) => {
-                const catMeals = meals[c];
-                const catId = result[i][0].insertId;
-
-                const mealsPromises = catMeals.map(m => {
-                    return db.query("INSERT INTO menu_category_meal(menuId, categoryId, mealName, price, maxCountPerDay) VALUES(?, ?, ?, ?, ?)", [menuId, catId, m.name, m.price, m.maxCount]);
-                })
-
-                await Promise.all(mealsPromises);
-                return res.status(201).json({ message: 'Menu Created' });
-            })
-        }
-
+    await db.query("INSERT INTO menu_category_meal(menuId, categoryId, mealName, price, maxCountPerDay) VALUES(?, ?, ?, ?, ?)", [menuId, catId, mealName, price, quantity]);
 
     } catch (err) {
         next(err);
@@ -405,6 +378,56 @@ const getAvailableFoodCount = async (req, res, next) => {
 
 }
 
+const getAllCategory = async (req, res, next) => {
+    const { id } = req.query;;
+    try {
+        const [result] = await db.query("SELECT categoryName AS name FROM menu_category WHERE menuId = ?", [id]);
+        res.status(200).json({ message: 'Success', details: result });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getFoodDetails = async (req, res, next) => {
+    const {id} = req.query;;
+
+    try {
+        const [result] = await db.query("SELECT price, maxCountPerDay AS quantity FROM menu_category_meal WHERE id = ?", [id])
+        res.status(200).json({ message: 'success', details : result });
+    } catch (err) {
+        next(err);
+
+    }
+}
+
+const updateFoodDetails = async (req, res, next) => {
+    const {id, quantity, price} = req.query;
+
+    if(!id || !quantity || !price){
+        res.status(400).json({message:'Invalid Inputs'})
+    }
+
+    try {
+        await db.query("UPDATE menu_category_meal; SET price = ?, maxCountPerDay = ? WHERE id = ? ", [price,quantity,id]);
+        res.status(200).json({ message: 'updated' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+const deleteFoodDetails = async (req, res, next) => {
+    const {id} = req.query;
+
+    try {
+        await db.query("DELETE FROM menu_category_meal WHERE id = ?", [id]);
+        res.status(200).json({ message: 'Removed' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+
 
 module.exports = {
     createNewMenu,
@@ -423,5 +446,9 @@ module.exports = {
     deleteCorder,
     getSelectedMenus,
 
-    getAvailableFoodCount
+    getAvailableFoodCount,
+    getAllCategory,
+    deleteFoodDetails,
+    updateFoodDetails,
+    getFoodDetails
 }
