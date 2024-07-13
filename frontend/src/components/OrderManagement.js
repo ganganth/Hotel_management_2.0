@@ -122,10 +122,10 @@ const OrderManagement = () => {
                                         {allBookingType[0].bookingType === 'event' && (
                                             <th>Total People</th>
                                         )}
-                                        {allBookingType[0].bookingType !== 'event'  && (
+                                        {allBookingType[0].bookingType !== 'event' && (
                                             <th>Quantity</th>
                                         )}
-                                         {allBookingType[0].bookingType === 'vehicle' && (
+                                        {allBookingType[0].bookingType === 'vehicle' && (
                                             <>
                                                 <th>PickUp Location</th>
                                             </>
@@ -136,13 +136,13 @@ const OrderManagement = () => {
                                     {allBookingType.map(booking => (
                                         <tr key={booking.id}>
                                             <td>{booking.id}</td>
-                                            {booking.bookingType === 'food'  && (
+                                            {booking.bookingType === 'food' && (
                                                 <>
                                                     <td>{booking.mealName}</td>
                                                     <td>{booking.name}</td>
                                                 </>
                                             )}
-                                            {booking.bookingType !== 'food'  && (
+                                            {booking.bookingType !== 'food' && (
                                                 <td>{booking.name}</td>
                                             )}
                                             {(booking.bookingType === 'room' || booking.bookingType === 'vehicle') && (
@@ -156,7 +156,13 @@ const OrderManagement = () => {
                                             )}
                                             <td>{booking.booking_quantity}</td>
                                             {booking.bookingType === 'vehicle' && (
-                                                <td>{booking.pickUpLocation}</td> 
+                                                <>
+                                                    {booking.pickUpLocation === null ? (
+                                                        <td>No place Selected</td>
+                                                    ) : (
+                                                        <td>{booking.pickUpLocation}</td>
+                                                    )}
+                                                </>
                                             )}
                                         </tr>
                                     ))}

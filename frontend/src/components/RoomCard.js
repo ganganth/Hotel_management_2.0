@@ -1,18 +1,23 @@
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Carousel } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { selectAuthUser } from '../app/auth/authSlice';
 import RoomView from '../features/rooms/RoomView';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import '../styles/roomCard.css';
+import '../styles/popupDefault.css'
+import { MdEditOff, MdDeleteForever } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 const RoomCard = (props) => {
 
-    const navigate = useNavigate();
     const { role } = useSelector(selectAuthUser);
     const [index, setIndex] = useState(0);
     const [singleRoom, setSingleRoom] = useState({});
+    const [updatePrice, setUpdatePrice] = useState(1);
+    const [updateQuantity, setUpdateQuantity] = useState(1);
     const axiosPrivate = useAxiosPrivate();
     const handleSelect = (selectedIndex, e) => {
         setIndex(selectedIndex);
@@ -33,27 +38,58 @@ const RoomCard = (props) => {
             setSingleRoom(response.data.room);
         } catch (err) {
             console.error("Error fetching single room type:", err);
-            
+
         }
-};
+    };
 
     const roomMoreViewFunc = (id) => {
         setSingleRoom({})
         props.setMoreRoomView(true);
         getSingleRoomType(id);
     }
-   
+
+    const handleRoomDelete = async (id, name) => {
+        try {
+            await axiosPrivate.delete(`/api/rooms/roomDetails/deleteRoom?id=${id}`);
+            toast.success(`${name} Successfully deleted`);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const handleRoomUpdate = async (id, name) => {
+        try {
+            const price = updatePrice < 0 ? 0 : updatePrice;
+            const quantity = updateQuantity < 0 ? 0 : updateQuantity;
+            await axiosPrivate.put(`/api/rooms/roomDetails/updateRoom?id=${id}&price=${price}&quantity=${quantity}`);
+            toast.success(`${name} Successfully updated`);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const getUpdateDetails = async (id) => {
+        try {
+            const response = await axiosPrivate.get(`/api/rooms/roomDetails/updateDetails?id=${id}`);
+            setUpdatePrice(response.data.details[0].price);
+            setUpdateQuantity(response.data.details[0].quantity)
+        } catch (err) {
+            console.log(err);
+        }
+
+    }
+
     return (
         <>
             {props.moreRoomView ? (
-                <RoomView 
+                <RoomView
                     setMoreRoomView={props.setMoreRoomView}
-                    roomId = {props.roomId}
-                    singleRoom = {singleRoom}
-                    setSingleRoom ={setSingleRoom}
-                    checkOutDate = {props.checkOutDate}
-                    checkInDate = {props.checkInDate}
-                    total_days = {props.total_days}
+                    roomId={props.roomId}
+                    singleRoom={singleRoom}
+                    setSingleRoom={setSingleRoom}
+                    checkOutDate={props.checkOutDate}
+                    checkInDate={props.checkInDate}
+                    total_days={props.total_days}
                 />
             ) : (
                 <div className="row justify-content-center mb-5" >
@@ -106,12 +142,93 @@ const RoomCard = (props) => {
 
                                     </div>
                                     <div className="hotel-card_pricing text-center">
+                                        {(role === 'Admin' || role === 'Employee') && (
+                                            <>
+                                                <Popup
+                                                    trigger={<button className='btn border-0'><MdEditOff size={25} /></button>}
+                                                    onOpen={() => getUpdateDetails(props.room.id)}
+                                                    modal
+                                                >
+                                                    {close => (
+                                                        <div className="modal" style={{ display: "contents" }}>
+                                                            <button className="close" onClick={close}>
+                                                                &times;
+                                                            </button>
+                                                            <div className="header"> Update {props.room.name} Details</div>
+                                                            {(updatePrice && updateQuantity) &&(
+                                                                <div className="content">
+                                                                <label htmlFor="">Price</label>
+                                                                <input
+                                                                    type='number'
+                                                                    step='1'
+                                                                    min='0'
+                                                                    className="form-control"
+                                                                    value={updatePrice}
+                                                                    onChange={e => setUpdatePrice(e.target.value)}
+                                                                />
+                                                                 <label htmlFor="">Quantity</label>
+                                                                <input
+                                                                    type='number'
+                                                                    step='1'
+                                                                    min='0'
+                                                                    className="form-control"
+                                                                    value={updateQuantity}
+                                                                    onChange={e => setUpdateQuantity(e.target.value)}
+                                                                />
+                                                            </div>
+                                                            )}
+                                                            
+                                                            <div className="actions" >
+                                                                <button className='btn btn-success' onClick={() => handleRoomUpdate(props.room.id, props.room.name)}>Update</button>
+                                                                <button
+                                                                    className="btn btn-danger"
+                                                                    onClick={() => {
+                                                                        console.log('modal closed ');
+                                                                        close();
+                                                                    }}
+                                                                    style={{ marginLeft: "2px" }}
+                                                                >
+                                                                    cancel
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </Popup>
+
+                                                <Popup
+                                                    trigger={<button className='btn border-0 text-danger' ><MdDeleteForever size={25} /></button>}
+                                                    modal
+                                                >
+                                                    {close => (
+                                                        <div className="modal" style={{ display: "contents" }}>
+                                                            <button className="close" onClick={close}>
+                                                                &times;
+                                                            </button>
+                                                            <div className="header">Are you sure you want to delete {props.room.name}?</div>
+                                                            <div className="actions" >
+                                                                <button className='btn btn-success' onClick={() => handleRoomDelete(props.room.id, props.room.name)}>Delete</button>
+                                                                <button
+                                                                    className="btn btn-danger"
+                                                                    onClick={() => {
+                                                                        console.log('modal closed ');
+                                                                        close();
+                                                                    }}
+                                                                    style={{ marginLeft: "2px" }}
+                                                                >
+                                                                    cancel
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </Popup>
+                                            </>
+                                        )}
                                         <h3>${calculateDiscount()}</h3>
                                         <div className="d-flex gap-2">
                                             <h6 className="text-striked text-muted">${props.room.totalPrice}</h6>
                                             <h6 className="text-success">{props.room.fullPaymentDiscount}% off</h6>
                                         </div>
-                                        {(role === 'Customer') && (
+                                        {role === 'Customer' && (
                                             <button className="btn btn-primary" onClick={() => roomMoreViewFunc(props.room.id)}>View More</button>
                                         )}
                                     </div>

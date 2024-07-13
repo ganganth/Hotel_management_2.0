@@ -66,7 +66,9 @@ const TaxManagement = () => {
                                 <td>{d.discription}</td>
                                 <td>
                                     <input
-                                        type="text"
+                                        type='number' 
+                                        step='0.01' 
+                                        min='0.00'
                                         className="form-control"
                                         value={d.rate}
                                         onChange={e => handleRateChange(d.id, e.target.value)}

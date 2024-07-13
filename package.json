@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "reactjs-popup": "^2.0.6",
     "redux-persist": "^6.0.0"
   }
 }

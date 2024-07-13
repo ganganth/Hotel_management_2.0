@@ -458,6 +458,44 @@ const deleteCorder = async (req, res, next) => {
     }
 }
 
+const getRoomDetails = async (req, res, next) => {
+    const {id} = req.query;;
+
+    try {
+        const [result] = await db.query("SELECT totalPrice AS price, totalRooms AS quantity FROM room_type WHERE id = ?", [id])
+
+        res.status(200).json({ message: 'success', details : result });
+    } catch (err) {
+        next(err);
+
+    }
+}
+
+const updateRoomDetails = async (req, res, next) => {
+    const {id, quantity, price} = req.query;
+
+    if(!id || !quantity || !price){
+        res.status(400).json({message:'Invalid Inputs'})
+    }
+
+    try {
+        await db.query("UPDATE room_type SET totalPrice = ?, totalRooms = ? WHERE id = ? ", [price,quantity,id]);
+        res.status(200).json({ message: 'updated' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+const deleteRoomDetails = async (req, res, next) => {
+    const {id} = req.query;
+
+    try {
+        await db.query("DELETE FROM room_type WHERE id = ?", [id]);
+        res.status(200).json({ message: 'Removed' });
+    } catch (err) {
+        next(err);
+    }
+}
 
 module.exports = {
     getAllSpecialFeatures,
@@ -475,4 +513,8 @@ module.exports = {
 
     getMonthlyBookingsReport,
     deleteCorder,
+
+    deleteRoomDetails,
+    updateRoomDetails,
+    getRoomDetails
 }

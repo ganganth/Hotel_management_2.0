@@ -1,5 +1,8 @@
 
-// import { useNavigate } from 'react-router-dom';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+import '../styles/popupDefault.css'
+import { MdEditOff, MdDeleteForever } from 'react-icons/md';
 import { Carousel, Badge } from 'react-bootstrap';
 import { MdInfo, MdCheckCircle, MdCancel, MdDoubleArrow } from 'react-icons/md';
 import { FaCarSide, FaGasPump, FaMapMarkerAlt, FaCheck } from 'react-icons/fa';
@@ -8,13 +11,13 @@ import { FaCarSide, FaGasPump, FaMapMarkerAlt, FaCheck } from 'react-icons/fa';
 const VehicleCard = (props) => {
 
     // const navigate = useNavigate();
-    
+
 
     const calculatePriceWithDiscount = (price, discount) => {
         const d = (+price / 100) * +discount;
         return (+price - d).toFixed(2);
     }
-  
+
     return (
 
         <div className="p-4 shadow mb-4 w-100 position-relative" >
@@ -79,10 +82,76 @@ const VehicleCard = (props) => {
                             <Badge bg='dark'>{props.vehicle.type.charAt(0).toUpperCase() + props.vehicle.type.slice(1)}</Badge>
 
                         </p>
-                        {props.role === 'Customer' && (
+                        {props.role === 'Customer' ? (
                             <button className='btn btn-primary rounded mx-5 d-flex align-items-center justify-content-center gap-2' style={{ fontWeight: 500, width: '200px', fontSize: '18px' }} onClick={() => props.handleVehiclePopup(props.vehicle)} >Rent Now <MdDoubleArrow fontSize={25} /></button>
-                        )}
+                        ) : (
+                            <div className='d-flex justify-content-start'>
+                                <Popup
+                                    trigger={<button className='btn border-0'><MdEditOff size={25} /></button>}
+                                    modal
+                                >
+                                    {close => (
+                                        <div className="modal" style={{ display: "contents" }}>
+                                            <button className="close" onClick={close}>
+                                                &times;
+                                            </button>
+                                            <div className="header"> Update vehicle Details</div>
+                                            <div className="content">
+                                                {' '}
+                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque, a nostrum.
+                                                Dolorem, repellat quidem ut, minima sint vel eveniet quibusdam voluptates
+                                                delectus doloremque, explicabo tempore dicta adipisci fugit amet dignissimos?
+                                                <br />
+                                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur sit
+                                                commodi beatae optio voluptatum sed eius cumque, delectus saepe repudiandae
+                                                explicabo nemo nam libero ad, doloribus, voluptas rem alias. Vitae?
+                                            </div>
+                                            <div className="actions" >
+                                                <button className='btn btn-success'>Update</button>
+                                                <button
+                                                    className="btn btn-danger"
+                                                    onClick={() => {
+                                                        console.log('modal closed ');
+                                                        close();
+                                                    }}
+                                                    style={{ marginLeft: "2px" }}
+                                                >
+                                                    cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </Popup>
 
+                                <Popup
+                                    trigger={<button className='btn border-0 text-danger' ><MdDeleteForever size={25} /></button>}
+                                    modal
+                                >
+                                    {close => (
+                                        <div className="modal" style={{ display: "contents" }}>
+                                            <button className="close" onClick={close}>
+                                                &times;
+                                            </button>
+                                            <div className="header">Are you sure you want to delete {props.vehicle.name} vehicle?</div>
+                                            <div className="actions" >
+                                                <button className='btn btn-success'>Delete</button>
+                                                <button
+                                                    className="btn btn-danger"
+                                                    onClick={() => {
+                                                        console.log('modal closed ');
+                                                        close();
+                                                    }}
+                                                    style={{ marginLeft: "2px" }}
+                                                >
+                                                    cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </Popup>
+                            </div>
+                        )}
+                       
                     </div>
 
                 </div>
