@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const {auth, isEmployee} = require('../middleware/auth');
+const { auth, isEmployee } = require('../middleware/auth');
 
 router.use(auth);
 
-const {createNewVehicle, updateVehicleImages, getAllVehicles, deleteVehicle, updateVehicle, getSingleVehicle, searchRentalVehicles, createNewRental, getSingleRental, updateRentalPayment, getAllRentalsOfPerson, getAllRentals,deleteCorder, getAllAvailableVehicles} = require('../controllers/vehicleControllers');
+const { createNewVehicle, updateVehicleImages, getAllVehicles, deleteVehicle, updateVehicle, getSingleVehicle, searchRentalVehicles, createNewRental, getSingleRental, updateRentalPayment, getAllRentalsOfPerson, getAllRentals, deleteCorder, getAllAvailableVehicles,getVehicleDetails,updateVehicleDetails,deleteVehicleDetails } = require('../controllers/vehicleControllers');
 
 router.route('/')
     .post(isEmployee, createNewVehicle) // create a new vehicle (employees & admins)
@@ -34,11 +34,20 @@ router.route('/rental/my')
 
 router.route('/rental/:rentalId')
     .get(getSingleRental) // get details about a single rental
-    
+
 router.route('/rental/:id')
     .delete(deleteCorder) // Both employees and admins can access
 
 router.route('/booking/rent-allVehicle')
-    .get(getAllAvailableVehicles) 
-    
+    .get(getAllAvailableVehicles)
+
+router.route('/vehicleDetails/updateDetails')
+    .get(getVehicleDetails)
+
+router.route('/vehicleDetails/updateVehicle')
+    .put(updateVehicleDetails)
+
+router.route('/VehicleDetails/deleteVehicle')
+    .delete(deleteVehicleDetails)
+
 module.exports = router;

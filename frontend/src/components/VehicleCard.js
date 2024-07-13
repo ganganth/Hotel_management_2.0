@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import '../styles/popupDefault.css'
@@ -6,16 +6,51 @@ import { MdEditOff, MdDeleteForever } from 'react-icons/md';
 import { Carousel, Badge } from 'react-bootstrap';
 import { MdInfo, MdCheckCircle, MdCancel, MdDoubleArrow } from 'react-icons/md';
 import { FaCarSide, FaGasPump, FaMapMarkerAlt, FaCheck } from 'react-icons/fa';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import { toast } from 'react-toastify';
 // import { useState } from 'react';
 
 const VehicleCard = (props) => {
 
     // const navigate = useNavigate();
-
+    const [updatePrice, setUpdatePrice] = useState(1);
+    const [updateQuantity, setUpdateQuantity] = useState(1);
+    const axiosPrivate = useAxiosPrivate();
 
     const calculatePriceWithDiscount = (price, discount) => {
         const d = (+price / 100) * +discount;
         return (+price - d).toFixed(2);
+    }
+
+    const handleVehicleDelete = async (id, name) => {
+        try {
+            await axiosPrivate.delete(`/api/vehicles/vehicleDetails/deleteVehicle?id=${id}`);
+            toast.success(`${name} Successfully deleted`);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const handleVehicleUpdate = async (id, name) => {
+        try {
+            const price = updatePrice < 0 ? 0 : updatePrice;
+            const quantity = updateQuantity < 0 ? 0 : updateQuantity;
+            await axiosPrivate.put(`/api/vehicles/vehicleDetails/updateVehicle?id=${id}&price=${price}&quantity=${quantity}`);
+            toast.success(`${name} Successfully updated`);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const getUpdateDetails = async (id) => {
+        try {
+            const response = await axiosPrivate.get(`/api/vehicles/vehicleDetails/updateDetails?id=${id}`);
+            setUpdatePrice(response.data.details[0].price);
+            setUpdateQuantity(response.data.details[0].quantity)
+        } catch (err) {
+            console.log(err);
+        }
+
     }
 
     return (
@@ -89,25 +124,38 @@ const VehicleCard = (props) => {
                                 <Popup
                                     trigger={<button className='btn border-0'><MdEditOff size={25} /></button>}
                                     modal
+                                    onOpen={() => getUpdateDetails(props.vehicle.id)}
                                 >
                                     {close => (
                                         <div className="modal" style={{ display: "contents" }}>
                                             <button className="close" onClick={close}>
                                                 &times;
                                             </button>
-                                            <div className="header"> Update vehicle Details</div>
-                                            <div className="content">
-                                                {' '}
-                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque, a nostrum.
-                                                Dolorem, repellat quidem ut, minima sint vel eveniet quibusdam voluptates
-                                                delectus doloremque, explicabo tempore dicta adipisci fugit amet dignissimos?
-                                                <br />
-                                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur sit
-                                                commodi beatae optio voluptatum sed eius cumque, delectus saepe repudiandae
-                                                explicabo nemo nam libero ad, doloribus, voluptas rem alias. Vitae?
-                                            </div>
+                                            <div className="header"> Update {props.vehicle.name} vehicle Details</div>
+                                            {(updatePrice && updateQuantity) && (
+                                                <div className="content">
+                                                    <label htmlFor="">Price</label>
+                                                    <input
+                                                        type='number'
+                                                        step='1'
+                                                        min='0'
+                                                        className="form-control"
+                                                        value={updatePrice}
+                                                        onChange={e => setUpdatePrice(e.target.value)}
+                                                    />
+                                                    <label htmlFor="">Quantity</label>
+                                                    <input
+                                                        type='number'
+                                                        step='1'
+                                                        min='0'
+                                                        className="form-control"
+                                                        value={updateQuantity}
+                                                        onChange={e => setUpdateQuantity(e.target.value)}
+                                                    />
+                                                </div>
+                                            )}
                                             <div className="actions" >
-                                                <button className='btn btn-success'>Update</button>
+                                                <button className='btn btn-success' onClick={() => handleVehicleUpdate(props.vehicle.id, props.vehicle.name)}>Update</button>
                                                 <button
                                                     className="btn btn-danger"
                                                     onClick={() => {
@@ -134,7 +182,7 @@ const VehicleCard = (props) => {
                                             </button>
                                             <div className="header">Are you sure you want to delete {props.vehicle.name} vehicle?</div>
                                             <div className="actions" >
-                                                <button className='btn btn-success'>Delete</button>
+                                                <button className='btn btn-success' onClick={() => handleVehicleDelete(props.vehicle.id, props.vehicle.name)}>Delete</button>
                                                 <button
                                                     className="btn btn-danger"
                                                     onClick={() => {
@@ -151,7 +199,7 @@ const VehicleCard = (props) => {
                                 </Popup>
                             </div>
                         )}
-                       
+
                     </div>
 
                 </div>

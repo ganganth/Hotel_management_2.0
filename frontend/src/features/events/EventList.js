@@ -18,6 +18,9 @@ const EventList = () => {
 
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [updatePrice, setUpdatePrice] = useState(1);
+    const [updateQuantity, setUpdateQuantity] = useState(1);
+
 
     useEffect(() => {
 
@@ -36,20 +39,33 @@ const EventList = () => {
 
     }, [axiosPrivate]);
 
-    const handleEventDelete = async (eventId) => {
-        const isConfirmed = window.confirm(`Are you sure you want to delete this event? This action cannot be undone`);
-        if (isConfirmed) {
-            try {
-                // delete the event
-                await axiosPrivate.delete(`/api/events/${eventId}`);
+    const handleEventDelete = async (id, name) => {
+        try {
+            await axiosPrivate.delete(`/api/events/eventsDetails/deleteEvent?id=${id}`);
+            toast.success(`${name} Successfully deleted`);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
-                // update the state
-                setEvents(prev => prev.filter(e => e.id.toString() !== eventId.toString()));
-                toast.success('Event removed');
-            } catch (err) {
-                console.log(err);
-                toast.error(err.response.data?.message || 'Error deleting event');
-            }
+    const handleEventUpdate = async (id, name) => {
+        try {
+            const price = updatePrice < 0 ? 0 : updatePrice;
+            const quantity = updateQuantity < 0 ? 0 : updateQuantity;
+            await axiosPrivate.put(`/api/events/eventDetails/updateEvent?id=${id}&price=${price}&quantity=${quantity}`);
+            toast.success(`${name} Successfully updated`);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const getUpdateDetails = async (id) => {
+        try {
+            const response = await axiosPrivate.get(`/api/events/eventDetails/updateDetails?id=${id}`);
+            setUpdatePrice(response.data.details[0].price);
+            setUpdateQuantity(response.data.details[0].quantity)
+        } catch (err) {
+            console.log(err);
         }
 
     }
@@ -86,25 +102,39 @@ const EventList = () => {
                         <Popup
                             trigger={<button className='btn border-0'><MdEditOff size={25} /></button>}
                             modal
+                            onOpen={() => getUpdateDetails(e.id)}
                         >
                             {close => (
                                 <div className="modal" style={{ display: "contents" }}>
                                     <button className="close" onClick={close}>
                                         &times;
                                     </button>
-                                    <div className="header"> Update event Details</div>
-                                    <div className="content">
-                                        {' '}
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque, a nostrum.
-                                        Dolorem, repellat quidem ut, minima sint vel eveniet quibusdam voluptates
-                                        delectus doloremque, explicabo tempore dicta adipisci fugit amet dignissimos?
-                                        <br />
-                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur sit
-                                        commodi beatae optio voluptatum sed eius cumque, delectus saepe repudiandae
-                                        explicabo nemo nam libero ad, doloribus, voluptas rem alias. Vitae?
-                                    </div>
+                                    <div className="header"> Update {e.name} event Details</div>
+                                    {(updatePrice && updateQuantity) && (
+                                        <div className="content">
+                                            <label htmlFor="">Price</label>
+                                            <input
+                                                type='number'
+                                                step='1'
+                                                min='0'
+                                                className="form-control"
+                                                value={updatePrice}
+                                                onChange={e => setUpdatePrice(e.target.value)}
+                                            />
+                                            <label htmlFor="">Quantity</label>
+                                            <input
+                                                type='number'
+                                                step='1'
+                                                min='0'
+                                                className="form-control"
+                                                value={updateQuantity}
+                                                onChange={e => setUpdateQuantity(e.target.value)}
+                                            />
+                                        </div>
+                                    )}
+
                                     <div className="actions" >
-                                        <button className='btn btn-success'>Update</button>
+                                        <button className='btn btn-success' onClick={() => handleEventUpdate(e.id, e.name)}>Update</button>
                                         <button
                                             className="btn btn-danger"
                                             onClick={() => {
@@ -131,7 +161,7 @@ const EventList = () => {
                                     </button>
                                     <div className="header">Are you sure you want to delete {e.name} event?</div>
                                     <div className="actions" >
-                                        <button className='btn btn-success'>Delete</button>
+                                        <button className='btn btn-success' onClick={() => handleEventDelete(e.id, e.name)}>Delete</button>
                                         <button
                                             className="btn btn-danger"
                                             onClick={() => {

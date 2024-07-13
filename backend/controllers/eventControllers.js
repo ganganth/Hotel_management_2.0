@@ -206,6 +206,45 @@ const getAvailableEventCount = async (req, res, next) => {
 
 }
 
+const getEventDetails = async (req, res, next) => {
+    const {id} = req.query;;
+
+    try {
+        const [result] = await db.query("SELECT price, maxQuantity AS quantity FROM event WHERE id = ?", [id])
+
+        res.status(200).json({ message: 'success', details : result });
+    } catch (err) {
+        next(err);
+
+    }
+}
+
+const updateEventDetails = async (req, res, next) => {
+    const {id, quantity, price} = req.query;
+
+    if(!id || !quantity || !price){
+        res.status(400).json({message:'Invalid Inputs'})
+    }
+
+    try {
+        await db.query("UPDATE event SET price = ?, maxQuantity = ? WHERE id = ? ", [price,quantity,id]);
+        res.status(200).json({ message: 'updated' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+const deleteEventDetails = async (req, res, next) => {
+    const {id} = req.query;
+
+    try {
+        await db.query("DELETE FROM event WHERE id = ?", [id]);
+        res.status(200).json({ message: 'Removed' });
+    } catch (err) {
+        next(err);
+    }
+}
+
 
 module.exports = {
     createNewEvent,
@@ -220,5 +259,8 @@ module.exports = {
     getAllEventOrders,
     deleteCorder,
 
-    getAvailableEventCount
+    getAvailableEventCount,
+    deleteEventDetails,
+    updateEventDetails,
+    getEventDetails
 }

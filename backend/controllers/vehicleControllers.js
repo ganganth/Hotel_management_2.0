@@ -383,6 +383,45 @@ const getAllAvailableVehicles = async (req, res, next) => {
 
 }
 
+const getVehicleDetails = async (req, res, next) => {
+    const {id} = req.query;;
+
+    try {
+        const [result] = await db.query("SELECT price, quantity FROM vehicle WHERE id = ?", [id])
+
+        res.status(200).json({ message: 'success', details : result });
+    } catch (err) {
+        next(err);
+
+    }
+}
+
+const updateVehicleDetails = async (req, res, next) => {
+    const {id, quantity, price} = req.query;
+
+    if(!id || !quantity || !price){
+        res.status(400).json({message:'Invalid Inputs'})
+    }
+
+    try {
+        await db.query("UPDATE vehicle SET price = ?, quantity = ? WHERE id = ? ", [price,quantity,id]);
+        res.status(200).json({ message: 'updated' });
+    } catch (err) {
+        next(err);
+    }
+}
+
+const deleteVehicleDetails = async (req, res, next) => {
+    const {id} = req.query;
+
+    try {
+        await db.query("DELETE FROM vehicle WHERE id = ?", [id]);
+        res.status(200).json({ message: 'Removed' });
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports = {
     createNewVehicle,
     updateVehicleImages,
@@ -397,5 +436,8 @@ module.exports = {
     createNewRental,
     getSingleRental,
     updateRentalPayment,
-    deleteCorder
+    deleteCorder,
+    deleteVehicleDetails,
+    updateVehicleDetails,
+    getVehicleDetails
 }

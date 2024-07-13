@@ -62,6 +62,7 @@ const RoomCard = (props) => {
             const price = updatePrice < 0 ? 0 : updatePrice;
             const quantity = updateQuantity < 0 ? 0 : updateQuantity;
             await axiosPrivate.put(`/api/rooms/roomDetails/updateRoom?id=${id}&price=${price}&quantity=${quantity}`);
+            calculateDiscount();
             toast.success(`${name} Successfully updated`);
         } catch (err) {
             console.log(err);

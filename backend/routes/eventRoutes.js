@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const {auth, isEmployee} = require('../middleware/auth');
+const { auth, isEmployee } = require('../middleware/auth');
 
-const { createNewEvent, getAllEvents, deleteEvent, getAllCommonEvents, getAllSpecialEvents, getOverallEventsData, createEventOrder, getAllEventOrdersOfCustomer, getAllEventOrders,deleteCorder,getAvailableEventCount } = require('../controllers/eventControllers');
+const { createNewEvent, getAllEvents, deleteEvent, getAllCommonEvents, getAllSpecialEvents, getOverallEventsData, createEventOrder, getAllEventOrdersOfCustomer, getAllEventOrders, deleteCorder, getAvailableEventCount, getEventDetails, updateEventDetails, deleteEventDetails } = require('../controllers/eventControllers');
 
 router.use(auth);
 
@@ -36,4 +36,12 @@ router.route('/:eventId')
 router.route('/booking/eventItemOrder')
     .get(getAvailableEventCount)
 
+router.route('/eventDetails/updateDetails')
+    .get(getEventDetails)
+
+router.route('/eventDetails/updateEvent')
+    .put(updateEventDetails)
+
+router.route('/eventsDetails/deleteEvent')
+    .delete(deleteEventDetails)
 module.exports = router;
