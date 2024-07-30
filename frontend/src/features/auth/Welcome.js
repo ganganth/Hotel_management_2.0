@@ -22,17 +22,16 @@ const Welcome = () => {
     const [month, setMonth] = useState(1);
     const [reservationType, setReservationType] = useState('A');
     const [date, setDate] = useState(1);
-
     const contentToPrint = useRef(null);
     const contentToPrint1 = useRef(null);
     const contentToPrint2 = useRef(null);
+
     const handlePrint = useReactToPrint({
         documentTitle: "Lakraj all order",
         onBeforePrint: () => console.log("before printing..."),
         onAfterPrint: () => console.log("after printing..."),
         removeAfterPrint: true,
     });
-
 
     useEffect(() => {
         const getAllBookings = async () => {
@@ -91,7 +90,7 @@ const Welcome = () => {
     }
 
     return (
-        <div className="d-flex position-fixed" >
+        <div className="d-flex" >
 
             <div className='col-8'>
 
@@ -112,7 +111,6 @@ const Welcome = () => {
                             </div>
                         </div>
                     </div>
-
                     <div className="col-sm-4">
                         <div className="card" style={{ height: "120px" }}>
                             <div className="card-body">
@@ -120,7 +118,7 @@ const Welcome = () => {
                                 <p className="text-center">$ {(summary && summary.length > 0) ? summary[0].totalRemain : 0}</p>
                             </div>
                         </div>
-                    </div>
+                    </div>      
                 </div>
 
                 <div className='row mt-3 d-flex'>
@@ -170,7 +168,7 @@ const Welcome = () => {
                                 </tbody>
                             </Table>
                         ) : (
-                            <Alert variant='info'>No bookings yet</Alert>
+                            <Alert style={{width:"100%"}} variant='info'>No bookings yet</Alert>
                         )}
                     </div>
                 </div>
@@ -237,7 +235,7 @@ const Welcome = () => {
 
                             <div className='d-flex'>
                                 <label htmlFor="exampleInputEmail1" className="label " style={{ width: "20$" }}>Top five foods :</label>
-                                <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "25%" }} onClick={() => { handlePrint(null, () => contentToPrint1.current); }}><FaPrint /></button>
+                                <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "10%" }} onClick={() => { handlePrint(null, () => contentToPrint1.current); }}><FaPrint /></button>
                                 <select className="form-select c ml-2 " aria-label="Default select example" style={{ width: "40%", marginLeft: "10%" }} onChange={(e) => setDate(e.target.value)}>
                                     <option value="1">All</option>
                                     <option value="2">Today</option>
@@ -275,7 +273,7 @@ const Welcome = () => {
                         <div className='row' style={{ height: "50%" }}>
                             <div className='d-flex'>
                                 <label htmlFor="exampleInputEmail1" className="label " style={{ width: "20$" }}>Top five events :</label>
-                                <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "25%" }} onClick={() => { handlePrint(null, () => contentToPrint2.current); }}><FaPrint /></button>
+                                <button style={{ background: 'none', border: 'none', padding: 0, width: 0, marginLeft: "10%" }} onClick={() => { handlePrint(null, () => contentToPrint2.current); }}><FaPrint /></button>
                                 <select className="form-select c ml-2 " aria-label="Default select example" style={{ width: "40%", marginLeft: "10%" }} onChange={(e) => setDate(e.target.value)}>
                                     <option value="1">All</option>
                                     <option value="2">Today</option>

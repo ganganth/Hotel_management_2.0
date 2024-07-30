@@ -19,6 +19,7 @@ const RoomCard = (props) => {
     const [updatePrice, setUpdatePrice] = useState(1);
     const [updateQuantity, setUpdateQuantity] = useState(1);
     const axiosPrivate = useAxiosPrivate();
+    console.log(updatePrice)
     const handleSelect = (selectedIndex, e) => {
         setIndex(selectedIndex);
     };

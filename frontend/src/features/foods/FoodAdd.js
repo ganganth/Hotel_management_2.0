@@ -72,7 +72,7 @@ const FoodAdd = () => {
             <div className='form-group mb-4'>
                 <label className='form-label' htmlFor='menuName' >All categories</label>
                 {(allCategories && allCategories.length > 0) && (
-                    <select onChange={e => setCategory(e.target.value.trim())} >
+                    <select value={allCategories[0].name} onChange={e => setCategory(e.target.value.trim())} >
                         {allCategories.map(c => <option key={c.name} value={c.name} >{c.name}</option>)}
                     </select>
                 )}

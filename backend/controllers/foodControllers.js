@@ -240,7 +240,7 @@ const createNewOrder = async (req, res, next) => {
             await db.query("INSERT INTO food_order_item (orderId, menuId, categoryId, mealName, price, totalPrice, quantity) VALUES (?,?,?,?,?,?,?)", [orderId, orderItems[i].menuId, orderItems[i].categoryId, orderItems[i].mealName, orderItems[i].price, orderItems[i].totalPrice, orderItems[i].quantity]);
         }
 
-        res.status(201).json({ message: 'Order created successfully' });
+        res.status(201).json({ message: 'Order created successfully'});
 
     } catch (err) {
         next(err);

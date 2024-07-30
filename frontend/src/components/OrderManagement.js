@@ -52,11 +52,12 @@ const OrderManagement = () => {
             console.log(err);
         }
     }
-
+    
     const handleAllOrderType = async () => {
+        const date = moment(currentDate).utc().format('YYYY-MM-DD');
         try {
             setAllBookingType([]);
-            const response = await axiosPrivate.get(`/api/order/filterDataType/?date=${currentDate}&reservationType=${reservationType}`);
+            const response = await axiosPrivate.get(`/api/order/filterDataType/?date=${date}&reservationType=${reservationType}`);
             setAllBookingType(response.data.booking);
             setOrderTypeTitle(response.data.title);
         } catch (err) {
@@ -147,12 +148,12 @@ const OrderManagement = () => {
                                             )}
                                             {(booking.bookingType === 'room' || booking.bookingType === 'vehicle') && (
                                                 <>
-                                                    <td>{moment(booking.checkInDate).utc().format('YYYY-MM-DD')}</td>
+                                                    <td>{booking.checkInDate}</td>
                                                     <td>{moment(booking.checkOutDate).utc().format('YYYY-MM-DD')}</td>
                                                 </>
                                             )}
                                             {(booking.bookingType === 'event' || booking.bookingType === 'food') && (
-                                                <td>{moment(booking.reserveDate).utc().format('YYYY-MM-DD')}</td>
+                                                <td>{booking.reserveDate}</td>
                                             )}
                                             <td>{booking.booking_quantity}</td>
                                             {booking.bookingType === 'vehicle' && (

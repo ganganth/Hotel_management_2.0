@@ -16,7 +16,6 @@ const FoodList = () => {
         const getAllMenus = async () => {
             try {
                 const response =await axiosPrivate.get('/api/foods');
-                console.log(response);
                 setMenus(response.data.menus);
             } catch (err) {
                 console.log(err);
