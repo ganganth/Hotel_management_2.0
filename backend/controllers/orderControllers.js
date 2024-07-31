@@ -88,7 +88,7 @@ const getFilterOrderDetailsType = async (req, res, next) => {
             title = `${date} Reserve Vehicles Details`
 
         }
-        console.log(result)
+
         res.status(200).json({ message: 'Success', booking: result, title: title });
         
 

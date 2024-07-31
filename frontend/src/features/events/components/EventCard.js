@@ -62,7 +62,7 @@ const EventCard = (props) => {
         );
 
         if (isFound) {
-            toast.warning(`Maximum number of ${props.event.name} Orders reserved In ${props.reservedDate}`)
+            toast.warning(`Maximum number of ${props.event.name} Orders reserved In ${moment(props.reservedDate).utc().format('YYYY-MM-DD')}`)
         }
         else {
             

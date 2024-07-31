@@ -387,7 +387,6 @@ const RoomAdd = () => {
 
                 <div className='mb-4'>
                     <label className='mb-3'>Room Number Details</label>
-
                     {rooms.length === 0 && (<p>No room numbers added yet</p>)}
                     {rooms.length > 0 && (
                         <div className='roomAdd-roomno-tag-container'>

@@ -111,6 +111,7 @@ const RoomView = (props) => {
                 </div>
 
                 <div className='roomView-details'>
+                
                     <Row className='mb-2'>
                         <Col md={4}>
                             <div className='roomView-details-legend roomView-details-bedType'>
