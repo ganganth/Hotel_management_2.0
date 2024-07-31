@@ -26,7 +26,7 @@ const Payment = (props) => {
                 total_quantity: item.quantity,
                 total_price: item.Total_price,
                 reserveDate: item.reservedDate,
-                pickUpLocation: 'BULL'
+                pickUpLocation: 'NULL'
             }));
             setFilteredRoomsOrder(filteredArray);
         }

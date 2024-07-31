@@ -3,7 +3,7 @@ import { AiFillDelete } from "react-icons/ai";
 
 const CustomerCartCard = (props) => {
     return (
-        <div className="card shadow-none" style={{ width: "90%", marginLeft: "5%" }}>
+        <div className="card shadow-none" style={{ width: "90%", marginLeft: "5%",marginTop:"5px" }}>
             <div className="card-body" >
                 <>
                     <h5 className="card-title text-reset fs-5">{props.title}</h5>

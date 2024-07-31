@@ -267,7 +267,7 @@ const createNewBooking = async (req, res, next) => {
             await connection.query(`
                 INSERT INTO place_booking (bookingId, roomId, vehicleId, eventId, foodId, quantity, price, bookingType, reserveDate, pickUpLocation) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `, [bookingId, 1, 1, 1, f.id, f.total_quantity, f.total_price, 'food', formatDateForMySQL(f.reserveDate), pickUpLocation]);
+            `, [bookingId, 1, 1, 1, f.id, f.total_quantity, f.total_price, 'food', formatDateForMySQL(f.reserveDate), null]);
         }
 
         // Commit the transaction
@@ -277,7 +277,7 @@ const createNewBooking = async (req, res, next) => {
         const mobileNo = customerDetails[0].phone;
         const email = customerDetails[0].email;
         const subject_text = 'Thank you for your reservation';
-        const message_text = `Your reservation ${bookingId} is confirmed and Enjoy your vacation`;
+        const message_text = `Your reservation #001${bookingId} is confirmed and Enjoy your vacation`;
 
         await sendEmail(email,subject_text,message_text);
         await sendSMS(message_text,mobileNo);
